@@ -6,7 +6,7 @@ const
 
 module.exports = {
   watch:true,
-  mode:'development',
+  mode:'production',
   entry: pages.map(page=>({[page]:`./src/${page}/index.ts`})).reduce((p,c)=>({...p,...c})),
   module: {
     rules: [
