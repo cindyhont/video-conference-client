@@ -2,8 +2,6 @@ import '../output.css';
 
 let roomID = ''
 
-console.log(process.env.API_PATH)
-
 const 
     getRoomLinkBtn = document.getElementById("share-room-link"),
     getRoomLinkTooltip = getRoomLinkBtn.getElementsByTagName('span')[0],
@@ -15,7 +13,7 @@ getRoomLinkBtn.addEventListener('click',()=>{
     getRoomLinkTooltip.classList.remove('show')
     clearTimeout(removeTooltipTimeout)
 
-    navigator.clipboard.writeText(roomID)
+    navigator.clipboard.writeText(`${process.env.CLIENT_HOST}/room?id=${roomID}`)
         .then(()=>{
             getRoomLinkTooltip.classList.add('show')
             removeTooltipTimeout = setTimeout(() => {
