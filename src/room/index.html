@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Video Conference</title>
+        <link rel="icon" type="image/png" sizes="192x192" href="https://cdn.cindyhodev.com/favicon/android-chrome-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="https://cdn.cindyhodev.com/favicon/android-chrome-512x512.png" />
+        <link rel="icon" type="image/png" sizes="180x180" href="https://cdn.cindyhodev.com/favicon/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.cindyhodev.com/favicon/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.cindyhodev.com/favicon/favicon-16x16.png" />
+        <link rel="icon" sizes="48x48" href="https://cdn.cindyhodev.com/favicon/favicon.ico" />
+    </head>
+    <body style="background-color: #000;">
+        <div id="non-video-container" class="relative h-screen w-screen flex flex-col justify-center text-white">
+            <div id="spinner" class="m-auto w-fit h-fit scale-150">
+                <svg class="spin-slow" height="48" width="48" view-box="0 0 48 48">
+                    <path fill="rgb(103 232 249)" d="m9 30-1-3v-3q0-7 4-11t12-5h2l-3-3V3l1-1 2 1 5 5v1l1 1h-1v1l-5 5-2 1-1-1v-2l3-2h-2q-5 0-9 3-3 4-3 9v6l-2 1-1-1Zm13 15-5-5v-1h-1l1-1v-1l5-5 1-1 2 1v2l-3 3h2q5 0 9-4t4-9l-1-2v-4l2-1 1 1 1 3 1 3q0 7-5 12t-12 5h-2l3 2v2l-2 1-1-1Z"/>
+                </svg>
+            </div>
+            <div id="post-room-id-validation" class="welcome-instruction-box m-auto max-w-sm w-10/12 h-fit bg-white/40 backdrop-blur rounded-xl py-2.5 px-4 hidden">
+                <div id="browser-not-support" class="hidden">
+                    <p>Your browser does not support this service. Please move to another browser.</p>
+                    <div class="text-center my-2">
+                        <button id="close-window" class="bg-cyan-400 mt-2 p-2 rounded-md transition duration-300 hover:bg-cyan-300">Close Window</button>
+                    </div>
+                </div>
+                <div id="connection-error" class="hidden">
+                    <p>Connection error</p>
+                    <div class="text-center my-2">
+                        <button class="reload-page bg-cyan-400 mt-2 p-2 rounded-md transition duration-300 hover:bg-cyan-300">Reload Page</button>
+                    </div>
+                </div>
+                <div id="permission-denied" class="hidden">
+                    <p>You have just denied permission to use your camera/microphone.</p>
+                    <div class="text-center my-2">
+                        <button class="reload-page bg-cyan-400 mt-2 p-2 rounded-md transition duration-300 hover:bg-cyan-300">Reload Page</button>
+                    </div>
+                </div>
+                <div id="enter-room-container" class="hidden text-center">
+                    <p>The room is ready</p>
+                    <button id="enter-room-btn" class="bg-cyan-400 mt-2 p-2 rounded-md transition duration-300 hover:bg-cyan-300">Enter</button>
+                </div>
+                <div id="room-not-exist-container" class="hidden">
+                    <p>The room is either not available or the link is wrong. Please make sure you have entered the correct link.</p>
+                    <div class="text-center mb-2 mt-4">
+                        <a class="bg-cyan-400 mt-2 p-2 rounded-md transition duration-300 hover:bg-cyan-300" href="/">Open a new room</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="videos" class="w-screen h-screen flex flex-wrap flex-row hidden">
+            <button id="leave-room" class="fixed top-0 right-0 p-2 bg-red-500 z-10">
+                <svg viewBox="0 0 512 512" width="25" height="25">
+                    <path fill="#fff" d="M160 96a32 32 0 1 0 0-64H96C43 32 0 75 0 128v256c0 53 43 96 96 96h64a32 32 0 1 0 0-64H96c-18 0-32-14-32-32V128c0-18 14-32 32-32h64zm345 177a24 24 0 0 0 0-34L361 103a24 24 0 0 0-41 17v72H192c-18 0-32 14-32 32v64c0 18 14 32 32 32h128v72a24 24 0 0 0 41 17l144-136z"/>
+                </svg>
+            </button>
+            <video id="localVideo" autoplay controls></video>
+        </div>
+    </body>
+</html>

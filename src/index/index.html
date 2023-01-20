@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Video Conference</title>
+        <link rel="icon" type="image/png" sizes="192x192" href="https://cdn.cindyhodev.com/favicon/android-chrome-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="https://cdn.cindyhodev.com/favicon/android-chrome-512x512.png" />
+        <link rel="icon" type="image/png" sizes="180x180" href="https://cdn.cindyhodev.com/favicon/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.cindyhodev.com/favicon/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.cindyhodev.com/favicon/favicon-16x16.png" />
+        <link rel="icon" sizes="48x48" href="https://cdn.cindyhodev.com/favicon/favicon.ico" />
+    </head>
+    <body style="background-color: #000;">
+        <div id="tsparticles"></div>
+        <div class="relative h-screen w-screen flex flex-col justify-center text-white">
+            <div class="welcome-instruction-box m-auto max-w-sm w-10/12 h-fit bg-white/20 backdrop-blur rounded-xl py-2.5 px-4">
+                <h1 class="font-bold text-slate-200">Welcome to video conference room</h1>
+                <ol class="list-decimal list-inside mb-6">
+                    <li class="mt-4"><button id="share-room-link" class="tooltip bg-white/20 p-2 rounded-md transition duration-300 hover:bg-white/40" hidden>Copy the room link<span>Copied!</span></button> and send it to participants.</li>
+                    <li class="mt-4">Now <a id="room-url" class="bg-white/20 p-2 rounded-md transition duration-300 hover:bg-white/40" hidden>to the room</a> and meet participants!</li>
+                </ol>
+                <i class="text-sm">The room is already open. The link will expire in an hour of inactivity.</i>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/tsparticles-engine@2/tsparticles.engine.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tsparticles-interaction-particles-links@2/tsparticles.interaction.particles.links.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tsparticles-move-base@2/tsparticles.move.base.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tsparticles-shape-circle@2/tsparticles.shape.circle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tsparticles-updater-color@2/tsparticles.updater.color.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tsparticles-updater-opacity@2/tsparticles.updater.opacity.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tsparticles-updater-out-modes@2/tsparticles.updater.out-modes.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tsparticles-updater-size@2/tsparticles.updater.size.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tsparticles-preset-links@2/tsparticles.preset.links.min.js"></script>
+        <script>
+            (async () => {
+                const createConfig = () => ({
+                    background: {
+                        color: "#000",
+                    },
+                    particles: {
+                        links: {
+                            distance: 150,
+                            enable: true,
+                        },
+                        move: {
+                            enable: true,
+                        },
+                        size: {
+                            value: 1,
+                        },
+                        shape: {
+                            type: "circle",
+                        },
+                        number:{
+                            value:window.innerHeight * window.innerWidth * 0.00015
+                        },
+                    },
+                })
+                await loadLinksPreset(tsParticles); // this is required only if you are not using the bundle script
+
+                await tsParticles.load("tsparticles", createConfig());
+
+                let resizeTimeout
+
+                window.addEventListener('resize',()=>{
+                    clearTimeout(resizeTimeout)
+                    resizeTimeout = setTimeout(async()=>await tsParticles.load("tsparticles", createConfig()),200);
+                })
+
+                const 
+                    buttons = document.querySelectorAll('[hidden]'),
+                    btnCount = buttons.length
+
+                for (let i=0; i<btnCount; i++){
+                    buttons.item(i).hidden = false
+                }
+            })();
+        </script>
+    </body>
+</html>
