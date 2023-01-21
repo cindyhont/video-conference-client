@@ -4,7 +4,6 @@ import { IconnectConsumerTransport, Iconsume, Iresume, IwsEvent } from "../inter
 import { updateVideoSize, videoContainer } from "../ui";
 import { websocket } from "../ws";
 import send from "../_ws/send";
-import { fetchConsumerTrack } from "./fetchConsumerTrack";
 
 const 
     onConsumerTransportCreated = async (
@@ -23,8 +22,8 @@ const
     ) => {
         const 
             transport = device.createRecvTransport(consumerTransportParams),
-            stream = new MediaStream(),
             videoElem = document.createElement('video')
+            
         videoElem.autoplay = true
         videoElem.controls = true
         videoElem.id = producerID
@@ -39,14 +38,14 @@ const
             const {type,payload} = JSON.parse(msg) as IwsEvent
 
             if (type==='subscribed' && payload.producerID === producerID) {
-                // const track = await fetchConsumerTrack(payload,transport)
                 const consumer = await transport.consume({
                     id:payload.consumerID,
                     producerId:producerID,
                     kind:payload.kind,
                     rtpParameters:payload.rtpParameters,
                 })
-                stream.addTrack(consumer.track)
+                videoElem.srcObject = new MediaStream([consumer.track])
+
                 videoContainer.appendChild(videoElem)
                 updateVideoSize()
             }
@@ -94,7 +93,6 @@ const
                     break;
                 case 'connected':
                     // console.log('connected');
-                    videoElem.srcObject = stream /////////////////
 
                     const message:Iresume = {
                         type:'resume',
