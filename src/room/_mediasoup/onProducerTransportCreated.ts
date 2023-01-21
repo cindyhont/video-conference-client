@@ -1,7 +1,7 @@
 import { DtlsParameters, IceCandidate, IceParameters } from "mediasoup-client/lib/types";
 import { device, setProducer, setProducerTransport } from "."
 import { IconnectProducerTransport, Iproduce } from "../interfaces";
-import { nonVideoContainer, permissionDenied, showMsgBox, showVideos, spinner, videoContainer } from "../ui";
+import { permissionDenied, showMsgBox, showVideos, videoContainer } from "../ui";
 import { clientID, websocket } from "../ws";
 import send from "../_ws/send";
 import { fetchExistingProducerIDs } from "./fetchExistingProducerIDs";

@@ -39,9 +39,14 @@ const
             const {type,payload} = JSON.parse(msg) as IwsEvent
 
             if (type==='subscribed' && payload.producerID === producerID) {
-                // console.log('subscribed')
-                const track = await fetchConsumerTrack(payload,transport)
-                stream.addTrack(track)
+                // const track = await fetchConsumerTrack(payload,transport)
+                const consumer = await transport.consume({
+                    id:payload.consumerID,
+                    producerId:producerID,
+                    kind:payload.kind,
+                    rtpParameters:payload.rtpParameters,
+                })
+                stream.addTrack(consumer.track)
                 videoContainer.appendChild(videoElem)
                 updateVideoSize()
             }
