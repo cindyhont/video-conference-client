@@ -119,7 +119,8 @@ const
             console.error(error)
             throw error
         }
-        console.log(localStream)
+        console.log(localStream.getVideoTracks())
+        console.log(localStream.getAudioTracks())
     },
     changeVideoSource = async(source:string) => {
         try {
