@@ -108,7 +108,7 @@ const
                     break
                 case 'connected':
                     // (document.getElementById('localVideo') as HTMLVideoElement).srcObject = localStream//new MediaStream([localVideoTrack])
-                    showVideos()
+                    // showVideos()
                     break
                 case 'failed':
                     console.log('failed')
