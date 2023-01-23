@@ -78,7 +78,7 @@ const
             let audioIsNotLive = true
             let stream:MediaStream
             while (audioIsNotLive){
-                stream = await navigator.mediaDevices.getUserMedia({audio:true})
+                stream = await navigator.mediaDevices.getUserMedia({video:false,audio:true})
                 audioIsNotLive = trackIsEnded(stream.getAudioTracks()[0])
             }
             resolve(stream.getAudioTracks()[0])
