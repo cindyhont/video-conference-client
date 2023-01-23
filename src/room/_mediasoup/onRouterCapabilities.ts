@@ -26,10 +26,11 @@ const onRouterCapabilities = async (routerRtpCapabilities:RtpCapabilities) => {
         try {
             await requestLocalStream()
         } catch (error) {
+            console.error(error)
             return
         }
-        // createProducerTransport('video')
-        // createProducerTransport('audio')
+        createProducerTransport('video')
+        createProducerTransport('audio')
     }
 
     // can start room
