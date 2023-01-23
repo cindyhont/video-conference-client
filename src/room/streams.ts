@@ -49,7 +49,7 @@ const
             let videoIsNotLive = true
             let stream:MediaStream
 
-            /*
+            
             while (videoIsNotLive){
                 switch (source){
                     case 'desktop-camera':
@@ -68,10 +68,10 @@ const
                     default: break;
                 }
                 videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
-                console.log(videoIsNotLive)
+                // console.log(videoIsNotLive)
             }
-            */
 
+            /*
             if (source==='desktop-camera'){
                 while (videoIsNotLive){
                     stream = await navigator.mediaDevices.getUserMedia({video:true})
@@ -93,10 +93,14 @@ const
                     videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
                 }
             }
-            console.log(stream.getVideoTracks()[0].readyState)
+            */
+            // console.log(stream.getVideoTracks()[0].readyState)
 
-            localVideoTrack?.stop()
-            localVideoTrack = stream.getVideoTracks()[0];
+            if (!localVideoTrack) stream.getVideoTracks()[0];
+            else {
+                localVideoTrack.addEventListener('ended',()=>stream.getVideoTracks()[0])
+                localVideoTrack.stop()
+            }
         } catch (error) {
             console.log(error)
             throw error
@@ -112,6 +116,8 @@ const
         const videoSrc = (document.querySelector('input[name="select-video-source"]:checked') as HTMLInputElement).value
 
         try {
+            await fetchVideo(videoSrc)
+
             let audioIsNotLive = true
             let stream:MediaStream
             while (audioIsNotLive){
@@ -124,14 +130,7 @@ const
             userDeniedPermission()
             throw error
         }
-
-        try {
-            await fetchVideo(videoSrc)
-        } catch (error) {
-            console.log(error)
-            userDeniedPermission()
-            throw error
-        }
+        
         console.log(localAudioTrack)
         console.log(localVideoTrack)
     },
