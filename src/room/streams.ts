@@ -93,7 +93,7 @@ const
                     videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
                 }
             }
-
+            console.log(stream.getVideoTracks()[0].readyState)
 
             localVideoTrack?.stop()
             localVideoTrack = stream.getVideoTracks()[0];
