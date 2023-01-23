@@ -131,7 +131,8 @@ const
                 //     videoNotLive = localStream.getVideoTracks()[0].readyState === 'ended'
                 //     console.log(localStream.getVideoTracks())
                 // }
-                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = await navigator.mediaDevices.getUserMedia(constraint)
+                localStream = await navigator.mediaDevices.getUserMedia(constraint);
+                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = localStream;
                 showVideos()
             } catch (error) {
                 console.error(error)
