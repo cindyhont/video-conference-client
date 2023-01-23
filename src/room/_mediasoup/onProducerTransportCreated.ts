@@ -1,8 +1,8 @@
 import { DtlsParameters, IceCandidate, IceParameters, MediaKind } from "mediasoup-client/lib/types";
 import { device, setProducer, setProducerTransport } from "."
 import { IconnectProducerTransport, Iproduce, IwsEvent } from "../interfaces";
-import { localAudioTrack, localVideoTrack } from "../streams";
-// import { localStream } from "../streams";
+// import { localAudioTrack, localVideoTrack } from "../streams";
+import { localStream } from "../streams";
 import { permissionDenied, showMsgBox, showVideos, videoContainer } from "../ui";
 import { clientID, websocket } from "../ws";
 import send from "../_ws/send";
@@ -108,7 +108,7 @@ const
                     // console.log('connecting')
                     break
                 case 'connected':
-                    (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localVideoTrack])
+                    (document.getElementById('localVideo') as HTMLVideoElement).srcObject = localStream//new MediaStream([localVideoTrack])
                     showVideos()
                     break
                 case 'failed':
@@ -119,7 +119,7 @@ const
         })
 
         try {
-            const _producer = await transport.produce({track: mediaKind === 'video' ? localVideoTrack : localAudioTrack})
+            const _producer = await transport.produce({track: mediaKind === 'video' ? localStream.getVideoTracks()[0] : localStream.getAudioTracks()[0]})
             setProducer(_producer,mediaKind)
         } catch (error) {
             videoContainer.classList.add('hidden')

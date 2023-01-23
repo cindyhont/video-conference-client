@@ -4,8 +4,9 @@ import { device, producers } from "./_mediasoup"
 let 
     isTouchableDevice = window.matchMedia('(hover:none)').matches,
     prevVideoSrc = '',
-    localVideoTrack:MediaStreamTrack,
-    localAudioTrack:MediaStreamTrack,
+    // localVideoTrack:MediaStreamTrack,
+    // localAudioTrack:MediaStreamTrack,
+    localStream = new MediaStream(),
     remoteStreams:{
         [clientID:string]:MediaStream
     } = {},
@@ -19,8 +20,7 @@ const
         prevVideoSrc = s
     },
     clearLocalStream = () => {
-        localVideoTrack?.stop()
-        localAudioTrack?.stop()
+        localStream.getTracks().forEach(t=>t.stop())
     },
     setRemoteStream = (clientID:string,track:MediaStreamTrack) => {
         if (clientID in remoteStreams) remoteStreams[clientID].addTrack(track)
@@ -44,40 +44,63 @@ const
         showMsgBox(permissionDenied)
     },
     trackIsEnded = (t:MediaStreamTrack) => t.readyState === 'ended',
-    fetchVideo = (source:string) => new Promise<MediaStreamTrack>(async(resolve,reject)=>{
+    fetchVideo = (source:string) => new Promise<boolean>(async(resolve,reject)=>{
         if (source==='desktop-camera'){
             navigator.mediaDevices.getUserMedia({video:true,audio:false})
                 .then(stream=>{
-                    console.log(stream.getVideoTracks()[0].readyState)
-                    resolve(stream.getVideoTracks()[0].clone());
+                    localStream.getVideoTracks().forEach(t=>{
+                        t.stop()
+                        localStream.removeTrack(t)
+                    })
+                    localStream.addTrack(stream.getVideoTracks()[0])
+                    resolve(true)
                 })
                 .catch(error=>reject(error))
         } else if (source==='front-camera'){
             navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false})
                 .then(stream=>{
-                    console.log(stream.getVideoTracks()[0].readyState)
-                    resolve(stream.getVideoTracks()[0].clone());
+                    localStream.getVideoTracks().forEach(t=>{
+                        t.stop()
+                        localStream.removeTrack(t)
+                    })
+                    localStream.addTrack(stream.getVideoTracks()[0])
+                    resolve(true)
                 })
                 .catch(error=>reject(error))
         } else if (source==='rear-camera'){
             navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})
                 .then(stream=>{
-                    console.log(stream.getVideoTracks()[0].readyState)
-                    resolve(stream.getVideoTracks()[0].clone());
+                    localStream.getVideoTracks().forEach(t=>{
+                        t.stop()
+                        localStream.removeTrack(t)
+                    })
+                    localStream.addTrack(stream.getVideoTracks()[0])
+                    resolve(true)
                 })
                 .catch(error=>reject(error))
         } else {
             navigator.mediaDevices.getDisplayMedia({video:true,audio:false})
                 .then(stream=>{
-                    console.log(stream.getVideoTracks()[0].readyState)
-                    resolve(stream.getVideoTracks()[0].clone());
+                    localStream.getVideoTracks().forEach(t=>{
+                        t.stop()
+                        localStream.removeTrack(t)
+                    })
+                    localStream.addTrack(stream.getVideoTracks()[0])
+                    resolve(true)
                 })
                 .catch(error=>reject(error))
         }
     }),
-    fetchAudio = () => new Promise<MediaStreamTrack>(async(resolve,reject)=>{
+    fetchAudio = () => new Promise<boolean>(async(resolve,reject)=>{
         navigator.mediaDevices.getUserMedia({video:false,audio:true})
-            .then(stream=>resolve(stream.getAudioTracks()[0]))
+            .then(stream=>{
+                localStream.getAudioTracks().forEach(t=>{
+                    t.stop()
+                    localStream.removeTrack(t)
+                })
+                localStream.addTrack(stream.getAudioTracks()[0])
+                resolve(true)
+            })
             .catch(error=>reject(error))
     }),
     requestLocalStream = async() => {
@@ -88,28 +111,26 @@ const
         }
 
         const videoSrc = (document.querySelector('input[name="select-video-source"]:checked') as HTMLInputElement).value
-        let tracks:MediaStreamTrack[]
+        // let tracks:MediaStreamTrack[]
 
         try {
-            tracks = await Promise.all([fetchAudio(),fetchVideo(videoSrc)])
-            localAudioTrack = tracks[0]
-            localVideoTrack = tracks[1]
+            await Promise.all([fetchAudio(),fetchVideo(videoSrc)])
         } catch (error) {
             console.error(error)
             throw error
         }
-        console.log(tracks)
-        console.log(localAudioTrack)
-        console.log(localVideoTrack)
+        console.log(localStream)
     },
     changeVideoSource = async(source:string) => {
         try {
+            /*
             localVideoTrack?.stop()
             producers?.video?.pause()
             localVideoTrack = await fetchVideo(source);
             (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localVideoTrack])
             producers?.video?.replaceTrack({track: localVideoTrack})
             producers?.video?.resume()
+            */
         } catch (error) {
             throw error
         }
@@ -119,8 +140,9 @@ export {
     isTouchableDevice,
     prevVideoSrc,
     setPrevVideoSrc,
-    localVideoTrack,
-    localAudioTrack,
+    localStream,
+    // localVideoTrack,
+    // localAudioTrack,
     remoteStreams,
     videoElements,
     clearLocalStream,

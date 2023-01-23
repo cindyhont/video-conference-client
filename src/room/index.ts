@@ -20,7 +20,7 @@ import createProducerTransport from './_mediasoup/createProducerTransport';
 import { detectDevice } from 'mediasoup-client';
 import { serverHost, setServerHost } from './_ws/serverHost';
 import { isExistingRoom, setIsExistingRoom } from './_mediasoup';
-import { changeVideoSource, clearLocalStream, isTouchableDevice, localVideoTrack, prevVideoSrc, requestLocalStream, setPrevVideoSrc } from './streams';
+import { changeVideoSource, clearLocalStream, isTouchableDevice, localStream, prevVideoSrc, requestLocalStream, setPrevVideoSrc } from './streams';
 
 const 
     getNewRoomServerHost = async() => {
@@ -104,7 +104,8 @@ const
     },
     videoSourceInputOnChange = async(e:Event) => {
         const source = (e.target as HTMLInputElement).value
-        if (!localVideoTrack || localVideoTrack.readyState==='ended'){
+        // if (!localVideoTrack || localVideoTrack.readyState==='ended'){
+        if (!!localStream.getVideoTracks().length || localStream.getVideoTracks().every(t=>t.readyState==='ended')){
             setPrevVideoSrc(source)
             return
         }
