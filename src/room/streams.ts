@@ -98,6 +98,8 @@ const
             userDeniedPermission()
             throw error
         }
+        console.log(localAudioTrack)
+        console.log(localVideoTrack)
     },
     changeVideoSource = async(source:string) => {
         try {
