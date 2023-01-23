@@ -74,6 +74,7 @@ const
                 console.error(error)
                 throw error
             }
+            console.log('success')
         } else {
             try {
                 localUserStream = await navigator.mediaDevices.getUserMedia({video:false,audio:true});
@@ -89,6 +90,7 @@ const
                 console.error(error)
                 throw error
             }
+            console.log('success')
         }
     },
     changeVideoSource = async(source:string) => {
