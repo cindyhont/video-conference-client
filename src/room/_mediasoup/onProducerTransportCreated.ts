@@ -60,6 +60,7 @@ const
                         producerNotConnected = false
                         callback()
                     } else if (producerNotConnected) {
+                        console.log(mediaKind,'producerNotConnected')
                         errback(new Error('producerNotConnected'))
                     }
                 }
@@ -89,17 +90,18 @@ const
 
                 const {type,payload} = JSON.parse(msg) as IwsEvent
                 // console.log(mediaKind,notProduced,mediaKind,type,payload)
-                if (type === 'produced') {
-                    notProduced = false
-                    if (payload.kind===mediaKind){
+
+                if (!!payload && 'kind' in payload && payload.kind === mediaKind){
+                    if (type === 'produced') {
+                        notProduced = false
                         /**** fetch other producers ****/
                         if (mediaKind==='video') fetchExistingProducerIDs()
                         console.log(mediaKind,'produced')
                         callback({id:payload.id})
+                    } else if (notProduced) {
+                        console.log(mediaKind,'notProduced')
+                        errback(new Error('notProduced'))
                     }
-                } else if (notProduced) {
-                    console.log(mediaKind,'notProduced')
-                    errback(new Error('notProduced'))
                 }
             })
         })
