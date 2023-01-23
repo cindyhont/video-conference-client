@@ -52,17 +52,17 @@ const
             while (videoIsNotLive){
                 switch (source){
                     case 'desktop-camera':
-                        stream = await navigator.mediaDevices.getUserMedia({video:true})
+                        stream = await navigator.mediaDevices.getUserMedia({video:true,audio:false})
                         break
                     case 'desktop-display':
                     case 'camera-display':
-                        stream = await navigator.mediaDevices.getDisplayMedia({video:true})
+                        stream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false})
                         break
                     case 'front-camera':
-                        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}})
+                        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false})
                         break
                     case 'rear-camera':
-                        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+                        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})
                         break
                     default: break;
                 }
@@ -81,7 +81,7 @@ const
                 stream = await navigator.mediaDevices.getUserMedia({video:false,audio:true})
                 audioIsNotLive = trackIsEnded(stream.getAudioTracks()[0])
             }
-            resolve(stream.getAudioTracks()[0])
+            setTimeout(()=>resolve(stream.getAudioTracks()[0]),100)
         } catch (error) {
             reject(error)
         }
@@ -151,8 +151,8 @@ const
         const videoSrc = (document.querySelector('input[name="select-video-source"]:checked') as HTMLInputElement).value
 
         try {
-            localVideoTrack = await fetchVideo(videoSrc)
             localAudioTrack = await fetchAudio()
+            localVideoTrack = await fetchVideo(videoSrc)
         } catch (error) {
             console.error(error)
             throw error
