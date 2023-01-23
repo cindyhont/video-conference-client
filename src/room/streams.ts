@@ -44,6 +44,8 @@ const
         enterRoomContainer.classList.add('hidden')
         showMsgBox(permissionDenied)
     },
+    useUserMedia = (src:string) => ['desktop-camera','front-camera','rear-camera'].includes(src),
+    getVideoSrc = () => (document.querySelector('input[name="select-video-source"]:checked') as HTMLInputElement).value,
     requestLocalStream = async() => {
         if (!device.canProduce('video')) {
             console.log('cannot produce video')
@@ -51,9 +53,9 @@ const
             throw new Error('cannot produce video')
         }
 
-        const videoSrc = (document.querySelector('input[name="select-video-source"]:checked') as HTMLInputElement).value
+        const videoSrc = getVideoSrc()
 
-        if (['desktop-camera','front-camera','rear-camera'].includes(videoSrc)){
+        if (useUserMedia(videoSrc)){
             const constraint = {
                 audio:true,
                 ...(videoSrc==='desktop-camera' && {video:true}),
@@ -63,7 +65,6 @@ const
             try {
                 localUserStream = await navigator.mediaDevices.getUserMedia(constraint);
                 (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]);
-                showVideos()
             } catch (error) {
                 console.error(error)
                 throw error
@@ -72,7 +73,6 @@ const
             try {
                 localDisplayStream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
                 (document.getElementById('localVideo') as HTMLVideoElement).srcObject = localDisplayStream
-                showVideos()
 
                 localUserStream = await navigator.mediaDevices.getUserMedia({video:false,audio:true});
             } catch (error){
@@ -80,19 +80,6 @@ const
                 throw error
             }
         }
-
-        /*
-        try {
-            // await Promise.all([fetchAudio(),fetchVideo(videoSrc)])
-            await fetchAudio()
-            await fetchVideo(videoSrc)
-            console.log(localStream.getVideoTracks())
-            console.log(localStream.getAudioTracks())
-        } catch (error) {
-            console.error(error)
-            throw error
-        }
-        */
     },
     changeVideoSource = async(source:string) => {
         try {
@@ -113,9 +100,10 @@ export {
     isTouchableDevice,
     prevVideoSrc,
     setPrevVideoSrc,
+    getVideoSrc,
     localUserStream,
-    // localVideoTrack,
-    // localAudioTrack,
+    localDisplayStream,
+    useUserMedia,
     remoteStreams,
     videoElements,
     clearLocalStream,

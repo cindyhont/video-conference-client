@@ -29,8 +29,8 @@ const onRouterCapabilities = async (routerRtpCapabilities:RtpCapabilities) => {
             console.error(error)
             return
         }
-        // createProducerTransport('video')
-        // createProducerTransport('audio')
+        createProducerTransport('video')
+        createProducerTransport('audio')
     }
 
     // can start room

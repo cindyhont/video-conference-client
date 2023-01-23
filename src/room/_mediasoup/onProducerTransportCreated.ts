@@ -1,7 +1,7 @@
 import { DtlsParameters, IceCandidate, IceParameters, MediaKind } from "mediasoup-client/lib/types";
 import { device, setProducer, setProducerTransport } from "."
 import { IconnectProducerTransport, Iproduce, IwsEvent } from "../interfaces";
-import { localUserStream } from "../streams";
+import { getVideoSrc, localDisplayStream, localUserStream, useUserMedia } from "../streams";
 import { permissionDenied, showMsgBox, showVideos, videoContainer } from "../ui";
 import { clientID, websocket } from "../ws";
 import send from "../_ws/send";
@@ -117,8 +117,10 @@ const
             }
         })
 
+        const videoSrc = getVideoSrc()
+
         try {
-            const _producer = await transport.produce({track: mediaKind === 'video' ? localUserStream.getVideoTracks()[0] : localUserStream.getAudioTracks()[0]})
+            const _producer = await transport.produce({track: mediaKind === 'video' ? useUserMedia(videoSrc) ? localUserStream.getVideoTracks()[0] : localDisplayStream.getVideoTracks()[0] : localUserStream.getAudioTracks()[0]})
             setProducer(_producer,mediaKind)
         } catch (error) {
             videoContainer.classList.add('hidden')
