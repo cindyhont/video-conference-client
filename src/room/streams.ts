@@ -117,12 +117,12 @@ const
             // await Promise.all([fetchAudio(),fetchVideo(videoSrc)])
             await fetchAudio()
             await fetchVideo(videoSrc)
+            console.log(localStream.getVideoTracks())
+            console.log(localStream.getAudioTracks())
         } catch (error) {
             console.error(error)
             throw error
         }
-        console.log(localStream.getVideoTracks())
-        console.log(localStream.getAudioTracks())
     },
     changeVideoSource = async(source:string) => {
         try {
