@@ -128,7 +128,7 @@ const
                 while (videoNotLive){
                     localStream = await navigator.mediaDevices.getUserMedia(constraint)
                     videoNotLive = localStream.getVideoTracks()[0].readyState === 'ended'
-                    console.log(videoNotLive)
+                    console.log(localStream.getVideoTracks())
                 }
             } catch (error) {
                 console.error(error)
