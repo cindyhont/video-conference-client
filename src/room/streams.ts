@@ -49,6 +49,7 @@ const
             let videoIsNotLive = true
             let stream:MediaStream
 
+            /*
             while (videoIsNotLive){
                 switch (source){
                     case 'desktop-camera':
@@ -69,6 +70,31 @@ const
                 videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
                 console.log(videoIsNotLive)
             }
+            */
+
+            if (source==='desktop-camera'){
+                while (videoIsNotLive){
+                    stream = await navigator.mediaDevices.getUserMedia({video:true})
+                    videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
+                }
+            } else if (source==='front-camera'){
+                while (videoIsNotLive){
+                    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}})
+                    videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
+                }
+            } else if (source==='rear-camera'){
+                while (videoIsNotLive){
+                    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+                    videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
+                }
+            } else {
+                while (videoIsNotLive){
+                    stream = await navigator.mediaDevices.getDisplayMedia({video:true})
+                    videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
+                }
+            }
+
+
             localVideoTrack?.stop()
             localVideoTrack = stream.getVideoTracks()[0];
         } catch (error) {
