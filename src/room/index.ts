@@ -44,8 +44,8 @@ const
                 } catch (error) {
                     return
                 }
-                createProducerTransport('video')
-                createProducerTransport('audio')
+                // createProducerTransport('video')
+                // createProducerTransport('audio')
             }
             postRoomIdValidation.classList.add('hidden')
             enterRoomContainer.classList.add('hidden')
