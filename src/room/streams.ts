@@ -67,6 +67,7 @@ const
                     default: break;
                 }
                 videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
+                console.log(videoIsNotLive)
             }
             localVideoTrack?.stop()
             localVideoTrack = stream.getVideoTracks()[0];
