@@ -44,6 +44,49 @@ const
         showMsgBox(permissionDenied)
     },
     trackIsEnded = (t:MediaStreamTrack) => t.readyState === 'ended',
+    fetchVideo = (source:string) => new Promise<MediaStreamTrack>(async(resolve,reject)=>{
+        try {
+            let videoIsNotLive = true
+            let stream:MediaStream
+            
+            while (videoIsNotLive){
+                switch (source){
+                    case 'desktop-camera':
+                        stream = await navigator.mediaDevices.getUserMedia({video:true})
+                        break
+                    case 'desktop-display':
+                    case 'camera-display':
+                        stream = await navigator.mediaDevices.getDisplayMedia({video:true})
+                        break
+                    case 'front-camera':
+                        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}})
+                        break
+                    case 'rear-camera':
+                        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+                        break
+                    default: break;
+                }
+                videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
+            }
+            resolve(stream.getVideoTracks()[0])
+        } catch (error) {
+            reject(error)
+        }
+    }),
+    fetchAudio = () => new Promise<MediaStreamTrack>(async(resolve,reject)=>{
+        try {
+            let audioIsNotLive = true
+            let stream:MediaStream
+            while (audioIsNotLive){
+                stream = await navigator.mediaDevices.getUserMedia({audio:true})
+                audioIsNotLive = trackIsEnded(stream.getAudioTracks()[0])
+            }
+            resolve(stream.getAudioTracks()[0])
+        } catch (error) {
+            reject(error)
+        }
+    }),
+    /*
     fetchVideo = async(source:string) => {
         try {
             let videoIsNotLive = true
@@ -83,6 +126,7 @@ const
             throw error
         }
     },
+    
     fetchAudio = async() => {
         try {
             let audioIsNotLive = true
@@ -96,6 +140,7 @@ const
             throw error
         }
     },
+    */
     requestLocalStream = async() => {
         if (!device.canProduce('video')) {
             console.log('cannot produce video')
@@ -106,6 +151,15 @@ const
         const videoSrc = (document.querySelector('input[name="select-video-source"]:checked') as HTMLInputElement).value
 
         try {
+            localVideoTrack = await fetchVideo(videoSrc)
+            localAudioTrack = await fetchAudio()
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+
+        /*
+        try {
             await Promise.all([
                 fetchVideo(videoSrc),
                 fetchAudio()
@@ -115,6 +169,7 @@ const
             userDeniedPermission()
             throw error
         }
+        */
 
         console.log(localAudioTrack)
         console.log(localVideoTrack)
@@ -123,7 +178,7 @@ const
         try {
             localVideoTrack?.stop()
             producers?.video?.pause()
-            await fetchVideo(source);
+            localVideoTrack = await fetchVideo(source);
             (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localVideoTrack])
             producers?.video?.replaceTrack({track: localVideoTrack})
             producers?.video?.resume()
