@@ -56,6 +56,7 @@ const
                 const {type,payload} = JSON.parse(msg) as IwsEvent
                 if (!!payload && 'mediaKind' in payload && payload.mediaKind === mediaKind){
                     if (type==='producerConnected') {
+                        console.log('producerConnected')
                         producerNotConnected = false
                         callback()
                     } else if (producerNotConnected) {
@@ -66,6 +67,7 @@ const
         })
 
         transport.on('produce', async ({ kind, rtpParameters }, callback, errback ) => {
+            console.log('produce')
             const message:Iproduce = {
                 type:'produce',
                 payload:{
@@ -92,10 +94,11 @@ const
                     if (payload.kind===mediaKind){
                         /**** fetch other producers ****/
                         if (mediaKind==='video') fetchExistingProducerIDs()
-    
+                        console.log('produced')
                         callback({id:payload.id})
                     }
                 } else if (notProduced) {
+                    console.log('notProduced')
                     errback(new Error('notProduced'))
                 }
             })
@@ -104,10 +107,11 @@ const
         transport.on('connectionstatechange',state => {
             switch (state){
                 case 'connecting':
-                    // console.log('connecting')
+                    console.log('connecting')
                     break
                 case 'connected':
-                    (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]) //localUserStream//new MediaStream([localVideoTrack])
+                    console.log('connected');
+                    (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]); //localUserStream//new MediaStream([localVideoTrack])
                     showVideos()
                     break
                 case 'failed':
