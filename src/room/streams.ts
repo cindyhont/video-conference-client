@@ -72,10 +72,11 @@ const
             }
         } else {
             try {
+                localUserStream = await navigator.mediaDevices.getUserMedia({video:false,audio:true});
+
                 localDisplayStream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
                 (document.getElementById('localVideo') as HTMLVideoElement).srcObject = localDisplayStream
                 showVideos()
-                localUserStream = await navigator.mediaDevices.getUserMedia({video:false,audio:true});
             } catch (error){
                 console.error(error)
                 throw error
