@@ -45,102 +45,29 @@ const
     },
     trackIsEnded = (t:MediaStreamTrack) => t.readyState === 'ended',
     fetchVideo = (source:string) => new Promise<MediaStreamTrack>(async(resolve,reject)=>{
-        try {
-            let videoIsNotLive = true
-            let stream:MediaStream
-            
-            while (videoIsNotLive){
-                switch (source){
-                    case 'desktop-camera':
-                        stream = await navigator.mediaDevices.getUserMedia({video:true,audio:false})
-                        break
-                    case 'desktop-display':
-                    case 'camera-display':
-                        stream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false})
-                        break
-                    case 'front-camera':
-                        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false})
-                        break
-                    case 'rear-camera':
-                        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})
-                        break
-                    default: break;
-                }
-                videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
-            }
-            setTimeout(()=>resolve(stream.getVideoTracks()[0]),100)
-        } catch (error) {
-            reject(error)
+        if (source==='desktop-camera'){
+            navigator.mediaDevices.getUserMedia({video:true,audio:false})
+                .then(stream=>resolve(stream.getVideoTracks()[0]))
+                .catch(error=>reject(error))
+        } else if (source==='front-camera'){
+            navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false})
+                .then(stream=>resolve(stream.getVideoTracks()[0]))
+                .catch(error=>reject(error))
+        } else if (source==='rear-camera'){
+            navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})
+                .then(stream=>resolve(stream.getVideoTracks()[0]))
+                .catch(error=>reject(error))
+        } else {
+            navigator.mediaDevices.getDisplayMedia({video:true,audio:false})
+                .then(stream=>resolve(stream.getVideoTracks()[0]))
+                .catch(error=>reject(error))
         }
     }),
     fetchAudio = () => new Promise<MediaStreamTrack>(async(resolve,reject)=>{
-        try {
-            let audioIsNotLive = true
-            let stream:MediaStream
-            while (audioIsNotLive){
-                stream = await navigator.mediaDevices.getUserMedia({video:false,audio:true})
-                audioIsNotLive = trackIsEnded(stream.getAudioTracks()[0])
-            }
-            setTimeout(()=>resolve(stream.getAudioTracks()[0]),100)
-        } catch (error) {
-            reject(error)
-        }
+        navigator.mediaDevices.getUserMedia({video:false,audio:true})
+            .then(stream=>resolve(stream.getAudioTracks()[0]))
+            .catch(error=>reject(error))
     }),
-    /*
-    fetchVideo = async(source:string) => {
-        try {
-            let videoIsNotLive = true
-            let stream:MediaStream
-            
-            while (videoIsNotLive){
-                switch (source){
-                    case 'desktop-camera':
-                        stream = await navigator.mediaDevices.getUserMedia({video:true})
-                        break
-                    case 'desktop-display':
-                    case 'camera-display':
-                        stream = await navigator.mediaDevices.getDisplayMedia({video:true})
-                        break
-                    case 'front-camera':
-                        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}})
-                        break
-                    case 'rear-camera':
-                        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
-                        break
-                    default: break;
-                }
-                videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
-            }
-
-            if (!localVideoTrack) {
-                console.log('localVideoTrack not exist')
-                localVideoTrack = stream.getVideoTracks()[0];
-                console.log('localVideoTrack readystate', stream.getVideoTracks()[0].readyState)
-            } else {
-                console.log('localVideoTrack exist')
-                localVideoTrack.addEventListener('ended',()=>localVideoTrack = stream.getVideoTracks()[0])
-                localVideoTrack.stop()
-            }
-        } catch (error) {
-            console.error(error)
-            throw error
-        }
-    },
-    
-    fetchAudio = async() => {
-        try {
-            let audioIsNotLive = true
-            let stream:MediaStream
-            while (audioIsNotLive){
-                stream = await navigator.mediaDevices.getUserMedia({audio:true})
-                audioIsNotLive = trackIsEnded(stream.getAudioTracks()[0])
-            }
-            localAudioTrack = stream.getAudioTracks()[0]
-        } catch (error) {
-            throw error
-        }
-    },
-    */
     requestLocalStream = async() => {
         if (!device.canProduce('video')) {
             console.log('cannot produce video')
@@ -149,28 +76,17 @@ const
         }
 
         const videoSrc = (document.querySelector('input[name="select-video-source"]:checked') as HTMLInputElement).value
+        let tracks:MediaStreamTrack[]
 
         try {
-            localAudioTrack = await fetchAudio()
-            localVideoTrack = await fetchVideo(videoSrc)
+            tracks = await Promise.all([fetchAudio(),fetchVideo(videoSrc)])
+            localAudioTrack = tracks[0]
+            localVideoTrack = tracks[1]
         } catch (error) {
             console.error(error)
             throw error
         }
-
-        /*
-        try {
-            await Promise.all([
-                fetchVideo(videoSrc),
-                fetchAudio()
-            ])
-        } catch (error) {
-            console.error(error)
-            userDeniedPermission()
-            throw error
-        }
-        */
-
+        console.log(tracks)
         console.log(localAudioTrack)
         console.log(localVideoTrack)
     },
