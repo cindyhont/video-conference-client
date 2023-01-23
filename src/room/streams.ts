@@ -68,7 +68,7 @@ const
                 }
                 videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
             }
-            resolve(stream.getVideoTracks()[0])
+            setTimeout(()=>resolve(stream.getVideoTracks()[0]),100)
         } catch (error) {
             reject(error)
         }
