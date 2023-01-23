@@ -77,6 +77,7 @@ const
     },
     requestLocalStream = async() => {
         if (!device.canProduce('video')) {
+            console.log('cannot produce video')
             userDeniedPermission()
             throw new Error('cannot produce video')
         }
@@ -84,7 +85,7 @@ const
         const videoSrc = (document.querySelector('input[name="select-video-source"]:checked') as HTMLInputElement).value
         try {
             await fetchVideo(videoSrc)
-            
+
             let audioIsNotLive = true
             let stream:MediaStream
             while (audioIsNotLive){
