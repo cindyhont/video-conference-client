@@ -114,7 +114,9 @@ const
         // let tracks:MediaStreamTrack[]
 
         try {
-            await Promise.all([fetchAudio(),fetchVideo(videoSrc)])
+            // await Promise.all([fetchAudio(),fetchVideo(videoSrc)])
+            await fetchAudio()
+            await fetchVideo(videoSrc)
         } catch (error) {
             console.error(error)
             throw error
