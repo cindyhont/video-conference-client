@@ -45,6 +45,8 @@ const
     },
     trackIsEnded = (t:MediaStreamTrack) => t.readyState === 'ended',
     fetchVideo = (source:string) => new Promise<boolean>(async(resolve,reject)=>{
+
+        /*
         if (source==='desktop-camera'){
             navigator.mediaDevices.getUserMedia({video:true,audio:false})
                 .then(stream=>{
@@ -90,6 +92,7 @@ const
                 })
                 .catch(error=>reject(error))
         }
+        */
     }),
     fetchAudio = () => new Promise<boolean>(async(resolve,reject)=>{
         navigator.mediaDevices.getUserMedia({video:false,audio:true})
@@ -113,6 +116,22 @@ const
         const videoSrc = (document.querySelector('input[name="select-video-source"]:checked') as HTMLInputElement).value
         // let tracks:MediaStreamTrack[]
 
+        if (['desktop-camera','front-camera','rear-camera'].includes(videoSrc)){
+            const constraint = {
+                audio:true,
+                ...(videoSrc==='desktop-camera' && {video:true}),
+                ...(videoSrc==='front-camera' && {video:{facingMode:'user'}}),
+                ...(videoSrc==='rear-camera' && {video:{facingMode:'environment'}}),
+            }
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia(constraint)
+            } catch (error) {
+                console.error(error)
+                throw error
+            }
+        }
+
+        /*
         try {
             // await Promise.all([fetchAudio(),fetchVideo(videoSrc)])
             await fetchAudio()
@@ -123,6 +142,7 @@ const
             console.error(error)
             throw error
         }
+        */
     },
     changeVideoSource = async(source:string) => {
         try {
