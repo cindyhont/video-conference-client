@@ -1,4 +1,4 @@
-import { enterRoomContainer, permissionDenied, showMsgBox, videoContainer } from "./ui"
+import { enterRoomContainer, permissionDenied, showMsgBox, showVideos, videoContainer } from "./ui"
 import { device, producers } from "./_mediasoup"
 
 let 
@@ -123,13 +123,16 @@ const
                 ...(videoSrc==='front-camera' && {video:{facingMode:'user'}}),
                 ...(videoSrc==='rear-camera' && {video:{facingMode:'environment'}}),
             }
+            console.log(constraint)
             try {
-                let videoNotLive = true
-                while (videoNotLive){
-                    localStream = await navigator.mediaDevices.getUserMedia(constraint)
-                    videoNotLive = localStream.getVideoTracks()[0].readyState === 'ended'
-                    console.log(localStream.getVideoTracks())
-                }
+                // let videoNotLive = true
+                // while (videoNotLive){
+                //     localStream = await navigator.mediaDevices.getUserMedia(constraint)
+                //     videoNotLive = localStream.getVideoTracks()[0].readyState === 'ended'
+                //     console.log(localStream.getVideoTracks())
+                // }
+                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = await navigator.mediaDevices.getUserMedia(constraint)
+                showVideos()
             } catch (error) {
                 console.error(error)
                 throw error
