@@ -49,28 +49,28 @@ const
             navigator.mediaDevices.getUserMedia({video:true,audio:false})
                 .then(stream=>{
                     console.log(stream.getVideoTracks()[0].readyState)
-                    resolve(stream.getVideoTracks()[0]);
+                    resolve(stream.getVideoTracks()[0].clone());
                 })
                 .catch(error=>reject(error))
         } else if (source==='front-camera'){
             navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false})
                 .then(stream=>{
                     console.log(stream.getVideoTracks()[0].readyState)
-                    resolve(stream.getVideoTracks()[0]);
+                    resolve(stream.getVideoTracks()[0].clone());
                 })
                 .catch(error=>reject(error))
         } else if (source==='rear-camera'){
             navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})
                 .then(stream=>{
                     console.log(stream.getVideoTracks()[0].readyState)
-                    resolve(stream.getVideoTracks()[0]);
+                    resolve(stream.getVideoTracks()[0].clone());
                 })
                 .catch(error=>reject(error))
         } else {
             navigator.mediaDevices.getDisplayMedia({video:true,audio:false})
                 .then(stream=>{
                     console.log(stream.getVideoTracks()[0].readyState)
-                    resolve(stream.getVideoTracks()[0]);
+                    resolve(stream.getVideoTracks()[0].clone());
                 })
                 .catch(error=>reject(error))
         }
