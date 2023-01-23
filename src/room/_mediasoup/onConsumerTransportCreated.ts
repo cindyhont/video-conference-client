@@ -90,7 +90,7 @@ const
                 }
 
                 const {type,payload} = JSON.parse(msg) as IwsEvent
-
+                console.log(type)
                 switch (type){
                     case 'consumerConnected':
                         if (payload.transportID === transport.id) {
