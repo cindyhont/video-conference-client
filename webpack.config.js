@@ -5,8 +5,8 @@ const
   pages = ['index','room']
 
 module.exports = {
-  watch:true,
-  mode:'development',
+  watch:false,
+  mode:'production',
   entry: pages.map(page=>({[page]:`./src/${page}/index.ts`})).reduce((p,c)=>({...p,...c})),
   module: {
     rules: [
