@@ -32,6 +32,7 @@ const
         mediaKind:MediaKind,
     ) => {
         const transport = device.createSendTransport(transportParams)
+        const videoSrc = getVideoSrc()
         setProducerTransport(transport,mediaKind)
 
         transport.on('connect',async ({dtlsParameters},callback,errback)=>{
@@ -113,7 +114,7 @@ const
                     break
                 case 'connected':
                     console.log(mediaKind,'connected');
-                    (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]); //localUserStream//new MediaStream([localVideoTrack])
+                    (document.getElementById('localVideo') as HTMLVideoElement).srcObject = useUserMedia(videoSrc) ? new MediaStream([localUserStream.getVideoTracks()[0]]) : new MediaStream([localDisplayStream.getVideoTracks()[0]]); //localUserStream//new MediaStream([localVideoTrack])
                     showVideos()
                     break
                 case 'failed':
@@ -123,11 +124,11 @@ const
             }
         })
 
-        // const videoSrc = getVideoSrc()
+        
 
         try {
-            // const _producer = await transport.produce({track: mediaKind === 'video' ? useUserMedia(videoSrc) ? localUserStream.getVideoTracks()[0] : localDisplayStream.getVideoTracks()[0] : localUserStream.getAudioTracks()[0]})
-            const _producer = await transport.produce({track: mediaKind === 'video' ? localUserStream.getVideoTracks()[0] : localUserStream.getAudioTracks()[0]})
+            const _producer = await transport.produce({track: mediaKind === 'video' ? useUserMedia(videoSrc) ? localUserStream.getVideoTracks()[0] : localDisplayStream.getVideoTracks()[0] : localUserStream.getAudioTracks()[0]})
+            // const _producer = await transport.produce({track: mediaKind === 'video' ? localUserStream.getVideoTracks()[0] : localUserStream.getAudioTracks()[0]})
             setProducer(_producer,mediaKind)
         } catch (error) {
             videoContainer.classList.add('hidden')

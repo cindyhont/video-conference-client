@@ -53,7 +53,7 @@ const
             throw new Error('cannot produce video')
         }
 
-        /*
+        
         const videoSrc = getVideoSrc()
 
         if (useUserMedia(videoSrc)){
@@ -64,13 +64,13 @@ const
                 ...(videoSrc==='rear-camera' && {video:{facingMode:'environment'}}),
             }
             try {
-                let videoNotLive = true
-                while (videoNotLive){
+                // let videoNotLive = true
+                // while (videoNotLive){
                     localUserStream = await navigator.mediaDevices.getUserMedia(constraint);
-                    videoNotLive = localUserStream.getVideoTracks()[0].readyState === 'ended';
-                }
-                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]);
-                showVideos()
+                //     videoNotLive = localUserStream.getVideoTracks()[0].readyState === 'ended';
+                // }
+                // (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]);
+                // showVideos()
             } catch (error) {
                 console.error(error)
                 throw error
@@ -79,20 +79,20 @@ const
             try {
                 localUserStream = await navigator.mediaDevices.getUserMedia({video:false,audio:true});
 
-                let videoNotLive = true
-                while (videoNotLive){
+                // let videoNotLive = true
+                // while (videoNotLive){
                     localDisplayStream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
-                    videoNotLive = localDisplayStream.getVideoTracks()[0].readyState === 'ended';
-                }
-                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = localDisplayStream
-                showVideos()
+                //     videoNotLive = localDisplayStream.getVideoTracks()[0].readyState === 'ended';
+                // }
+                // (document.getElementById('localVideo') as HTMLVideoElement).srcObject = localDisplayStream
+                // showVideos()
             } catch (error){
                 console.error(error)
                 throw error
             }
         }
-        */
-
+        
+        /*
         try {
             // let videoNotLive = true
             // while (videoNotLive){
@@ -106,6 +106,7 @@ const
             console.error(error)
             throw error
         }
+        */
     },
     changeVideoSource = async(source:string) => {
         try {
