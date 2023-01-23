@@ -124,7 +124,11 @@ const
                 ...(videoSrc==='rear-camera' && {video:{facingMode:'environment'}}),
             }
             try {
-                localStream = await navigator.mediaDevices.getUserMedia(constraint)
+                let videoNotLive = true
+                while (videoNotLive){
+                    localStream = await navigator.mediaDevices.getUserMedia(constraint)
+                    videoNotLive = localStream.getVideoTracks()[0].readyState === 'ended'
+                }
             } catch (error) {
                 console.error(error)
                 throw error
