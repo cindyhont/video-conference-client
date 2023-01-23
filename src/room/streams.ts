@@ -47,19 +47,31 @@ const
     fetchVideo = (source:string) => new Promise<MediaStreamTrack>(async(resolve,reject)=>{
         if (source==='desktop-camera'){
             navigator.mediaDevices.getUserMedia({video:true,audio:false})
-                .then(stream=>resolve(stream.getVideoTracks()[0]))
+                .then(stream=>{
+                    console.log(stream.getVideoTracks()[0].readyState)
+                    resolve(stream.getVideoTracks()[0]);
+                })
                 .catch(error=>reject(error))
         } else if (source==='front-camera'){
             navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false})
-                .then(stream=>resolve(stream.getVideoTracks()[0]))
+                .then(stream=>{
+                    console.log(stream.getVideoTracks()[0].readyState)
+                    resolve(stream.getVideoTracks()[0]);
+                })
                 .catch(error=>reject(error))
         } else if (source==='rear-camera'){
             navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})
-                .then(stream=>resolve(stream.getVideoTracks()[0]))
+                .then(stream=>{
+                    console.log(stream.getVideoTracks()[0].readyState)
+                    resolve(stream.getVideoTracks()[0]);
+                })
                 .catch(error=>reject(error))
         } else {
             navigator.mediaDevices.getDisplayMedia({video:true,audio:false})
-                .then(stream=>resolve(stream.getVideoTracks()[0]))
+                .then(stream=>{
+                    console.log(stream.getVideoTracks()[0].readyState)
+                    resolve(stream.getVideoTracks()[0]);
+                })
                 .catch(error=>reject(error))
         }
     }),
