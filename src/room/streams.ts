@@ -94,12 +94,12 @@ const
         */
 
         try {
-            let videoNotLive = true
-            while (videoNotLive){
+            // let videoNotLive = true
+            // while (videoNotLive){
                 localUserStream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
-                videoNotLive = localUserStream.getVideoTracks()[0].readyState === 'ended';
-                console.log(localUserStream.getVideoTracks()[0].readyState)
-            }
+            //     videoNotLive = localUserStream.getVideoTracks()[0].readyState === 'ended';
+            //     console.log(localUserStream.getVideoTracks()[0].readyState)
+            // }
             // (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]);
             // showVideos()
         } catch (error) {
