@@ -107,8 +107,8 @@ const
                     // console.log('connecting')
                     break
                 case 'connected':
-                    // (document.getElementById('localVideo') as HTMLVideoElement).srcObject = localStream//new MediaStream([localVideoTrack])
-                    // showVideos()
+                    (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]) //localUserStream//new MediaStream([localVideoTrack])
+                    showVideos()
                     break
                 case 'failed':
                     console.log('failed')
@@ -117,10 +117,11 @@ const
             }
         })
 
-        const videoSrc = getVideoSrc()
+        // const videoSrc = getVideoSrc()
 
         try {
-            const _producer = await transport.produce({track: mediaKind === 'video' ? useUserMedia(videoSrc) ? localUserStream.getVideoTracks()[0] : localDisplayStream.getVideoTracks()[0] : localUserStream.getAudioTracks()[0]})
+            // const _producer = await transport.produce({track: mediaKind === 'video' ? useUserMedia(videoSrc) ? localUserStream.getVideoTracks()[0] : localDisplayStream.getVideoTracks()[0] : localUserStream.getAudioTracks()[0]})
+            const _producer = await transport.produce({track: mediaKind === 'video' ? localUserStream.getVideoTracks()[0] : localUserStream.getAudioTracks()[0]})
             setProducer(_producer,mediaKind)
         } catch (error) {
             videoContainer.classList.add('hidden')

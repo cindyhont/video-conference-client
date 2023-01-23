@@ -53,6 +53,7 @@ const
             throw new Error('cannot produce video')
         }
 
+        /*
         const videoSrc = getVideoSrc()
 
         if (useUserMedia(videoSrc)){
@@ -74,7 +75,6 @@ const
                 console.error(error)
                 throw error
             }
-            console.log('success')
         } else {
             try {
                 localUserStream = await navigator.mediaDevices.getUserMedia({video:false,audio:true});
@@ -90,7 +90,20 @@ const
                 console.error(error)
                 throw error
             }
-            console.log('success')
+        }
+        */
+
+        try {
+            let videoNotLive = true
+            while (videoNotLive){
+                localUserStream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+                videoNotLive = localUserStream.getVideoTracks()[0].readyState === 'ended';
+            }
+            // (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]);
+            // showVideos()
+        } catch (error) {
+            console.error(error)
+            throw error
         }
     },
     changeVideoSource = async(source:string) => {
