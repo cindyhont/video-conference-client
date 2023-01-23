@@ -84,9 +84,8 @@ const
         }
 
         const videoSrc = (document.querySelector('input[name="select-video-source"]:checked') as HTMLInputElement).value
-        try {
-            await fetchVideo(videoSrc)
 
+        try {
             let audioIsNotLive = true
             let stream:MediaStream
             while (audioIsNotLive){
@@ -94,6 +93,14 @@ const
                 audioIsNotLive = trackIsEnded(stream.getAudioTracks()[0])
             }
             localAudioTrack = stream.getAudioTracks()[0]
+        } catch (error) {
+            console.log(error)
+            userDeniedPermission()
+            throw error
+        }
+
+        try {
+            await fetchVideo(videoSrc)
         } catch (error) {
             console.log(error)
             userDeniedPermission()
