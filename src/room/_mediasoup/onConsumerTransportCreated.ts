@@ -90,7 +90,7 @@ const
                 }
 
                 const {type,payload} = JSON.parse(msg) as IwsEvent
-                console.log(type)
+                // console.log(type)
                 switch (type){
                     case 'consumerConnected':
                         if (payload.transportID === transport.id) {
@@ -99,7 +99,7 @@ const
                         }
                         break
                     default: 
-                        if (consumerNotConnected) errback(new Error('consumerNotConnected'))
+                        // if (consumerNotConnected) errback(new Error('consumerNotConnected'))
                         break
                 }
             })
