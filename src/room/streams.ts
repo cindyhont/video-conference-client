@@ -63,7 +63,11 @@ const
                 ...(videoSrc==='rear-camera' && {video:{facingMode:'environment'}}),
             }
             try {
-                localUserStream = await navigator.mediaDevices.getUserMedia(constraint);
+                let videoNotLive = true
+                while (videoNotLive){
+                    localUserStream = await navigator.mediaDevices.getUserMedia(constraint);
+                    videoNotLive = localUserStream.getVideoTracks()[0].readyState === 'ended';
+                }
                 (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]);
                 showVideos()
             } catch (error) {
@@ -74,7 +78,11 @@ const
             try {
                 localUserStream = await navigator.mediaDevices.getUserMedia({video:false,audio:true});
 
-                localDisplayStream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
+                let videoNotLive = true
+                while (videoNotLive){
+                    localDisplayStream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
+                    videoNotLive = localDisplayStream.getVideoTracks()[0].readyState === 'ended';
+                }
                 (document.getElementById('localVideo') as HTMLVideoElement).srcObject = localDisplayStream
                 showVideos()
             } catch (error){
