@@ -6,7 +6,7 @@ let
     prevVideoSrc = '',
     // localVideoTrack:MediaStreamTrack,
     // localAudioTrack:MediaStreamTrack,
-    localStream = new MediaStream(),
+    localStream:MediaStream,
     remoteStreams:{
         [clientID:string]:MediaStream
     } = {},
@@ -128,6 +128,7 @@ const
                 while (videoNotLive){
                     localStream = await navigator.mediaDevices.getUserMedia(constraint)
                     videoNotLive = localStream.getVideoTracks()[0].readyState === 'ended'
+                    console.log(videoNotLive)
                 }
             } catch (error) {
                 console.error(error)
