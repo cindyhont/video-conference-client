@@ -56,7 +56,7 @@ const
                 const {type,payload} = JSON.parse(msg) as IwsEvent
                 if (!!payload && 'mediaKind' in payload && payload.mediaKind === mediaKind){
                     if (type==='producerConnected') {
-                        console.log('producerConnected')
+                        console.log(mediaKind,'producerConnected')
                         producerNotConnected = false
                         callback()
                     } else if (producerNotConnected) {
@@ -67,7 +67,7 @@ const
         })
 
         transport.on('produce', async ({ kind, rtpParameters }, callback, errback ) => {
-            console.log('produce')
+            console.log(mediaKind,'produce')
             const message:Iproduce = {
                 type:'produce',
                 payload:{
@@ -88,17 +88,17 @@ const
                 }
 
                 const {type,payload} = JSON.parse(msg) as IwsEvent
-                // console.log(notProduced,mediaKind,type,payload)
+                // console.log(mediaKind,notProduced,mediaKind,type,payload)
                 if (type === 'produced') {
                     notProduced = false
                     if (payload.kind===mediaKind){
                         /**** fetch other producers ****/
                         if (mediaKind==='video') fetchExistingProducerIDs()
-                        console.log('produced')
+                        console.log(mediaKind,'produced')
                         callback({id:payload.id})
                     }
                 } else if (notProduced) {
-                    console.log('notProduced')
+                    console.log(mediaKind,'notProduced')
                     errback(new Error('notProduced'))
                 }
             })
@@ -107,15 +107,15 @@ const
         transport.on('connectionstatechange',state => {
             switch (state){
                 case 'connecting':
-                    console.log('connecting')
+                    console.log(mediaKind,'connecting')
                     break
                 case 'connected':
-                    console.log('connected');
+                    console.log(mediaKind,'connected');
                     (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]); //localUserStream//new MediaStream([localVideoTrack])
                     showVideos()
                     break
                 case 'failed':
-                    console.log('failed')
+                    console.log(mediaKind,'failed')
                     transport.close()
                     break
             }
