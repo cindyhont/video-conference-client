@@ -123,7 +123,6 @@ const
                 ...(videoSrc==='front-camera' && {video:{facingMode:'user'}}),
                 ...(videoSrc==='rear-camera' && {video:{facingMode:'environment'}}),
             }
-            console.log(constraint)
             try {
                 // let videoNotLive = true
                 // while (videoNotLive){
@@ -132,7 +131,7 @@ const
                 //     console.log(localStream.getVideoTracks())
                 // }
                 localStream = await navigator.mediaDevices.getUserMedia(constraint);
-                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = localStream;
+                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localStream.getVideoTracks()[0]]);
                 showVideos()
             } catch (error) {
                 console.error(error)
