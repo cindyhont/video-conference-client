@@ -48,7 +48,6 @@ const
         try {
             let videoIsNotLive = true
             let stream:MediaStream
-
             
             while (videoIsNotLive){
                 switch (source){
@@ -68,44 +67,32 @@ const
                     default: break;
                 }
                 videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
-                // console.log(videoIsNotLive)
             }
-
-            /*
-            if (source==='desktop-camera'){
-                while (videoIsNotLive){
-                    stream = await navigator.mediaDevices.getUserMedia({video:true})
-                    videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
-                }
-            } else if (source==='front-camera'){
-                while (videoIsNotLive){
-                    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}})
-                    videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
-                }
-            } else if (source==='rear-camera'){
-                while (videoIsNotLive){
-                    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
-                    videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
-                }
-            } else {
-                while (videoIsNotLive){
-                    stream = await navigator.mediaDevices.getDisplayMedia({video:true})
-                    videoIsNotLive = trackIsEnded(stream.getVideoTracks()[0])
-                }
-            }
-            */
-            // console.log(stream.getVideoTracks()[0].readyState)
 
             if (!localVideoTrack) {
                 console.log('localVideoTrack not exist')
                 localVideoTrack = stream.getVideoTracks()[0];
+                console.log('localVideoTrack readystate', stream.getVideoTracks()[0].readyState)
             } else {
                 console.log('localVideoTrack exist')
                 localVideoTrack.addEventListener('ended',()=>localVideoTrack = stream.getVideoTracks()[0])
                 localVideoTrack.stop()
             }
         } catch (error) {
-            console.log(error)
+            console.error(error)
+            throw error
+        }
+    },
+    fetchAudio = async() => {
+        try {
+            let audioIsNotLive = true
+            let stream:MediaStream
+            while (audioIsNotLive){
+                stream = await navigator.mediaDevices.getUserMedia({audio:true})
+                audioIsNotLive = trackIsEnded(stream.getAudioTracks()[0])
+            }
+            localAudioTrack = stream.getAudioTracks()[0]
+        } catch (error) {
             throw error
         }
     },
@@ -119,17 +106,12 @@ const
         const videoSrc = (document.querySelector('input[name="select-video-source"]:checked') as HTMLInputElement).value
 
         try {
-            await fetchVideo(videoSrc)
-
-            let audioIsNotLive = true
-            let stream:MediaStream
-            while (audioIsNotLive){
-                stream = await navigator.mediaDevices.getUserMedia({audio:true})
-                audioIsNotLive = trackIsEnded(stream.getAudioTracks()[0])
-            }
-            localAudioTrack = stream.getAudioTracks()[0]
+            await Promise.all([
+                fetchVideo(videoSrc),
+                fetchAudio()
+            ])
         } catch (error) {
-            console.log(error)
+            console.error(error)
             userDeniedPermission()
             throw error
         }
