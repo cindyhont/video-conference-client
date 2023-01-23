@@ -1,6 +1,8 @@
-import { DtlsParameters, IceCandidate, IceParameters } from "mediasoup-client/lib/types";
+import { DtlsParameters, IceCandidate, IceParameters, MediaKind } from "mediasoup-client/lib/types";
 import { device, setProducer, setProducerTransport } from "."
-import { IconnectProducerTransport, Iproduce } from "../interfaces";
+import { IconnectProducerTransport, Iproduce, IwsEvent } from "../interfaces";
+import { localAudioTrack, localVideoTrack } from "../streams";
+// import { localStream } from "../streams";
 import { permissionDenied, showMsgBox, showVideos, videoContainer } from "../ui";
 import { clientID, websocket } from "../ws";
 import send from "../_ws/send";
@@ -28,16 +30,18 @@ const
             iceCandidates: IceCandidate[];
             dtlsParameters: DtlsParameters;
         },
+        mediaKind:MediaKind,
     ) => {
         const transport = device.createSendTransport(transportParams)
-        setProducerTransport(transport)
+        setProducerTransport(transport,mediaKind)
 
         transport.on('connect',async ({dtlsParameters},callback,errback)=>{
             const message:IconnectProducerTransport = {
                 type:'connectProducerTransport',
                 payload:{
                     transportID:transport.id,
-                    dtlsParameters
+                    dtlsParameters,
+                    mediaKind
                 }
             }
             send(message,websocket)
@@ -50,11 +54,15 @@ const
                     return
                 }
 
-                const evt = JSON.parse(msg)
-                if (evt.type==='producerConnected') {
-                    producerNotConnected = false
-                    callback()
-                } else if (producerNotConnected) errback(new Error('producerNotConnected'))
+                const {type,payload} = JSON.parse(msg) as IwsEvent
+                if (!!payload && 'mediaKind' in payload && payload.mediaKind === mediaKind){
+                    if (type==='producerConnected') {
+                        producerNotConnected = false
+                        callback()
+                    } else if (producerNotConnected) {
+                        errback(new Error('producerNotConnected'))
+                    }
+                }
             })
         })
 
@@ -78,15 +86,19 @@ const
                     return
                 }
 
-                const evt = JSON.parse(msg)
-                if (evt.type === 'produced') {
+                const {type,payload} = JSON.parse(msg) as IwsEvent
+                // console.log(notProduced,mediaKind,type,payload)
+                if (type === 'produced') {
                     notProduced = false
-                    
-                    /**** fetch other producers ****/
-                    fetchExistingProducerIDs()
-
-                    callback({id:evt.payload.id})
-                } else if (notProduced) errback(new Error('notProduced'))
+                    if (payload.kind===mediaKind){
+                        /**** fetch other producers ****/
+                        if (mediaKind==='video') fetchExistingProducerIDs()
+    
+                        callback({id:payload.id})
+                    }
+                } else if (notProduced) {
+                    errback(new Error('notProduced'))
+                }
             })
         })
 
@@ -96,7 +108,7 @@ const
                     // console.log('connecting')
                     break
                 case 'connected':
-                    (document.getElementById('localVideo') as HTMLVideoElement).srcObject = stream
+                    (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localVideoTrack])
                     showVideos()
                     break
                 case 'failed':
@@ -106,13 +118,9 @@ const
             }
         })
 
-        let stream:MediaStream
-
         try {
-            stream = await getUserMedia()
-            const track = stream.getVideoTracks()[0]
-            const _producer = await transport.produce({track})
-            setProducer(_producer)
+            const _producer = await transport.produce({track: mediaKind === 'video' ? localVideoTrack : localAudioTrack})
+            setProducer(_producer,mediaKind)
         } catch (error) {
             videoContainer.classList.add('hidden')
             showMsgBox(permissionDenied)

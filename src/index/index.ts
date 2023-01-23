@@ -5,7 +5,17 @@ let roomID = ''
 const 
     getRoomLinkBtn = document.getElementById("share-room-link"),
     getRoomLinkTooltip = getRoomLinkBtn.getElementsByTagName('span')[0],
-    roomURL = document.getElementById('room-url') as HTMLAnchorElement
+    roomURL = document.getElementById('room-url') as HTMLAnchorElement,
+    onViewportResize = () => {
+        const {width,height} = window.visualViewport;
+        document.body.style.setProperty('--full-width',`${width}px`)
+        document.body.style.setProperty('--full-height',`${height}px`)
+    }
+
+if ('visualViewport' in window){
+    onViewportResize()
+    window.visualViewport.addEventListener('resize',onViewportResize)
+}
 
 let removeTooltipTimeout:NodeJS.Timeout
 

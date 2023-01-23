@@ -1,6 +1,7 @@
 import { Device, RtpCapabilities } from "mediasoup-client/lib/types"
 import { device, isExistingRoom, setDevice } from "."
 import { IdeleteClient } from "../interfaces"
+import { requestLocalStream } from "../streams"
 import { enterRoomContainer, showMsgBox } from "../ui"
 import { clientID, websocket } from "../ws"
 import send from "../_ws/send"
@@ -21,7 +22,15 @@ const onRouterCapabilities = async (routerRtpCapabilities:RtpCapabilities) => {
     }
 
     await device.load({ routerRtpCapabilities })
-    if (!isExistingRoom) createProducerTransport()
+    if (!isExistingRoom) {
+        try {
+            await requestLocalStream()
+        } catch (error) {
+            return
+        }
+        createProducerTransport('video')
+        createProducerTransport('audio')
+    }
 
     // can start room
     if (isExistingRoom && enterRoomContainer.classList.contains('hidden')) showMsgBox(enterRoomContainer)

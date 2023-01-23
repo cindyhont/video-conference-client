@@ -1,29 +1,27 @@
-import { Consumer, Device, Producer, Transport } from "mediasoup-client/lib/types"
+import { Device, MediaKind, Producer, Transport } from "mediasoup-client/lib/types"
 
 let 
     device:Device,
     isExistingRoom = false,
-    producer:Producer,
-    producerTransport:Transport,
-    consumers:{
-        [id:string]:Consumer;
+    producers:{
+        [kind:string]:Producer
     } = {},
-    consumerTransports:{
-        [id:string]:Transport;
+    producerTransports:{
+        [kind:string]:Transport
     } = {}
 
 const 
     setDevice = (_device:Device) => device = _device,
     setIsExistingRoom = (v:boolean) => isExistingRoom = v,
-    setProducer = (_producer:Producer) => producer = _producer,
-    setProducerTransport = (_transport:Transport) => producerTransport = _transport
+    setProducer = (_producer:Producer,kind:MediaKind) => producers[kind] = _producer,
+    setProducerTransport = (_transport:Transport,kind:MediaKind) => producerTransports[kind] = _transport
 
 export {
     device,
     isExistingRoom,
-    producer,
+    producers,
     setDevice,
     setIsExistingRoom,
     setProducer,
-    setProducerTransport
+    setProducerTransport,
 }

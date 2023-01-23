@@ -57,7 +57,21 @@
 }
 
 video {
-    width:var(--width);
-    height:var(--height);
+    width:var(--video-w);
+    height:var(--video-h);
     position: relative;
+}
+
+.full-width {
+    width:var(--full-width,100vw);
+}
+
+.full-height {
+    height:var(--full-height,100vh);
+}
+
+@media (hover:none) {
+    #video-source-menu-icon:checked ~ #video-source-menu-container #video-source-menu{
+        transform: translateX(0);
+    }
 }

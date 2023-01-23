@@ -13,24 +13,22 @@ export interface IrouterCapabilities {
 export interface IproducerTransportCreated {
     type:'producerTransportCreated';
     payload:{
-        id: string;
-        iceParameters: IceParameters;
-        iceCandidates: IceCandidate[];
-        dtlsParameters: DtlsParameters;
-    };
+        kind:MediaKind;
+        params:{
+            id: string;
+            iceParameters: IceParameters;
+            iceCandidates: IceCandidate[];
+            dtlsParameters: DtlsParameters;
+        }
+    }
 }
 
 export interface InewProducer {
     type:'newProducer';
     payload:{
         producerID:string;
-    }
-}
-
-export interface IdeleteProducer {
-    type:'deleteProducer';
-    payload:{
-        producerID:string;
+        producerClientID:string;
+        kind:MediaKind;
     }
 }
 
@@ -44,6 +42,7 @@ export interface IconsumerTransportCreated {
             dtlsParameters: DtlsParameters;
         };
         producerID:string;
+        producerClientID:string;
     }
 }
 
@@ -69,20 +68,33 @@ export interface Isubscribed {
 export interface IexistingProducerIDs {
     type:'existingProducerIDs',
     payload:{
-        producerIDs:string[];
+        [clientID:string]:{
+            [kind:string]:string;
+        }
     }
 }
 
-export type IwsEvent = IrouterCapabilities
-    | IproducerTransportCreated
-    | InewProducer
-    | IdeleteProducer
-    | IconsumerTransportCreated
-    | IconsumerConnected
-    | Isubscribed
-    | IexistingProducerIDs
+export interface Iproduced {
+    type:'produced';
+    payload:{
+        id:string;
+        kind:MediaKind;
+    };
+}
 
-// messages
+export interface IproducerConnected {
+    type:'producerConnected';
+    payload:{
+        mediaKind:MediaKind;
+    }
+}
+
+export interface Iresumed {
+    type:'resumed';
+    payload:{
+        consumerTransportID:string;
+    }
+}
 
 export interface IdeleteClient {
     type:'deleteClient';
@@ -90,6 +102,20 @@ export interface IdeleteClient {
         clientID:string;
     }
 }
+
+export type IwsEvent = IrouterCapabilities
+    | IproducerTransportCreated
+    | InewProducer
+    | IconsumerTransportCreated
+    | IconsumerConnected
+    | Isubscribed
+    | IexistingProducerIDs
+    | Iproduced
+    | IproducerConnected
+    | Iresumed
+    | IdeleteClient
+
+// messages
 
 export interface IgetRouterRtpCapabilities {
     type:'getRouterRtpCapabilities';
@@ -105,6 +131,7 @@ export interface IcreateProducerTransport {
         forceTcp:boolean;
         rtpCapabilities:RtpCapabilities;
         clientID:string;
+        kind:MediaKind;
     }
 }
 
@@ -113,6 +140,7 @@ export interface IconnectProducerTransport {
     payload:{
         transportID:string;
         dtlsParameters:DtlsParameters;
+        mediaKind:MediaKind;
     };
 }
 
@@ -131,6 +159,8 @@ export interface IcreateConsumerTransport {
     payload:{
         clientID:string;
         producerID:string;
+        producerClientID:string;
+        kind:MediaKind;
     };
 }
 
@@ -157,6 +187,7 @@ export interface Iresume {
         rtpCapabilities:RtpCapabilities;
         transportID:string;
         producerID:string;
+        consumerID:string;
     };
 }
 

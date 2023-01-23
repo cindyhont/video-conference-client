@@ -1,8 +1,9 @@
-import { DtlsParameters, IceCandidate, IceParameters } from "mediasoup-client/lib/types";
+import { Consumer, DtlsParameters, IceCandidate, IceParameters } from "mediasoup-client/lib/types";
 import { device } from ".";
 import { IconnectConsumerTransport, Iconsume, Iresume, IwsEvent } from "../interfaces";
+import { setRemoteStream, setVideoElement, videoElements } from "../streams";
 import { updateVideoSize, videoContainer } from "../ui";
-import { websocket } from "../ws";
+import { clientID, websocket } from "../ws";
 import send from "../_ws/send";
 
 const 
@@ -10,6 +11,7 @@ const
         {
             consumerTransportParams,
             producerID,
+            producerClientID,
         }:{
             consumerTransportParams:{
                 id: string;
@@ -18,15 +20,19 @@ const
                 dtlsParameters: DtlsParameters;
             };
             producerID:string;
+            producerClientID: string;
         }
     ) => {
-        const 
-            transport = device.createRecvTransport(consumerTransportParams),
-            videoElem = document.createElement('video')
-            
-        videoElem.autoplay = true
-        videoElem.controls = true
-        videoElem.id = producerID
+        const transport = device.createRecvTransport(consumerTransportParams)
+        let consumer:Consumer
+
+        if (!(producerClientID in videoElements)) {
+            const videoElem = document.createElement('video')
+            videoElem.autoplay = true
+            videoElem.controls = true
+            videoElem.id = producerClientID
+            setVideoElement(videoElem,producerClientID)
+        }
         
         websocket.addEventListener('message',async (e)=>{
             const msg = e.data
@@ -37,17 +43,31 @@ const
 
             const {type,payload} = JSON.parse(msg) as IwsEvent
 
-            if (type==='subscribed' && payload.producerID === producerID) {
-                const consumer = await transport.consume({
-                    id:payload.consumerID,
-                    producerId:producerID,
-                    kind:payload.kind,
-                    rtpParameters:payload.rtpParameters,
-                })
-                videoElem.srcObject = new MediaStream([consumer.track])
-
-                videoContainer.appendChild(videoElem)
-                updateVideoSize()
+            switch (type){
+                case 'subscribed':
+                    if (payload.producerID === producerID){
+                        consumer = await transport.consume({
+                            id:payload.consumerID,
+                            producerId:producerID,
+                            kind:payload.kind,
+                            rtpParameters:payload.rtpParameters,
+                        })
+                        setRemoteStream(producerClientID,consumer.track)
+                        if (payload.kind==='video') {
+                            videoContainer.appendChild(videoElements[producerClientID])
+                        }
+                        videoElements[producerClientID]?.addEventListener('pause',()=>{
+                            consumer.pause()
+                        })
+                        videoElements[producerClientID]?.addEventListener('play',()=>{
+                            consumer.resume()
+                        })
+                        updateVideoSize()
+                    }
+                    break
+                case 'resumed':
+                    if (payload.consumerTransportID === transport.id && !!consumer) consumer.resume()
+                default: break;
             }
         })
 
@@ -92,14 +112,13 @@ const
                     // console.log('connecting');
                     break;
                 case 'connected':
-                    // console.log('connected');
-
                     const message:Iresume = {
                         type:'resume',
                         payload:{
                             rtpCapabilities:device.rtpCapabilities,
                             transportID:transport.id,
                             producerID,
+                            consumerID:consumer?.id || '',
                         }
                     }
                     send(message,websocket)

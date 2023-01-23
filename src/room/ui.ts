@@ -12,26 +12,23 @@ const
     videoContainer = document.getElementById('videos') as HTMLDivElement,
     leaveRoomBtn = document.getElementById('leave-room') as HTMLButtonElement,
     nonVideoContainer = document.getElementById('non-video-container') as HTMLDivElement,
+    videoSourceIconCheckbox = document.getElementById("video-source-menu-icon") as HTMLInputElement,
     showMsgBox = (msgElem:HTMLElement) => {
         spinner.classList.add('hidden')
         msgElem.classList.remove('hidden')
         postRoomIdValidation.classList.remove('hidden')
     },
     setVideoSize = (size:number) => {
-        videoContainer.style.setProperty('--width',`${size}%`)
-        videoContainer.style.setProperty('--height',`${size}%`)
+        videoContainer.style.setProperty('--video-w',`${size}%`)
+        videoContainer.style.setProperty('--video-h',`${size}%`)
     },
     updateVideoSize = () => {
         const videoCount = videoContainer.querySelectorAll('video').length
         if (videoCount===1) setVideoSize(100)
         else if (videoCount===2){
-            if (window.matchMedia('(orientation: landscape)').matches){
-                videoContainer.style.setProperty('--width',`50%`)
-                videoContainer.style.setProperty('--height',`100%`)
-            } else {
-                videoContainer.style.setProperty('--width',`100%`)
-                videoContainer.style.setProperty('--height',`50%`)
-            }
+            const isLandscape = window.matchMedia('(orientation: landscape)').matches
+            videoContainer.style.setProperty('--video-w',isLandscape ? '50%' : '100%')
+            videoContainer.style.setProperty('--video-h',isLandscape ? '100%' : '50%')
         }
         else if (videoCount<5) setVideoSize(50)
         else setVideoSize(100/3)
@@ -56,6 +53,7 @@ export {
     videoContainer,
     leaveRoomBtn,
     nonVideoContainer,
+    videoSourceIconCheckbox,
     showMsgBox,
     updateVideoSize,
     showVideos,
