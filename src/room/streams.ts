@@ -96,8 +96,11 @@ const
             */
             // console.log(stream.getVideoTracks()[0].readyState)
 
-            if (!localVideoTrack) localVideoTrack = stream.getVideoTracks()[0];
-            else {
+            if (!localVideoTrack) {
+                console.log('localVideoTrack not exist')
+                localVideoTrack = stream.getVideoTracks()[0];
+            } else {
+                console.log('localVideoTrack exist')
                 localVideoTrack.addEventListener('ended',()=>localVideoTrack = stream.getVideoTracks()[0])
                 localVideoTrack.stop()
             }
