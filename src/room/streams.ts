@@ -96,9 +96,9 @@ const
             */
             // console.log(stream.getVideoTracks()[0].readyState)
 
-            if (!localVideoTrack) stream.getVideoTracks()[0];
+            if (!localVideoTrack) localVideoTrack = stream.getVideoTracks()[0];
             else {
-                localVideoTrack.addEventListener('ended',()=>stream.getVideoTracks()[0])
+                localVideoTrack.addEventListener('ended',()=>localVideoTrack = stream.getVideoTracks()[0])
                 localVideoTrack.stop()
             }
         } catch (error) {
@@ -130,7 +130,7 @@ const
             userDeniedPermission()
             throw error
         }
-        
+
         console.log(localAudioTrack)
         console.log(localVideoTrack)
     },
