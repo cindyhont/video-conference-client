@@ -92,6 +92,7 @@ const
 
             await fetchVideo(videoSrc)
         } catch (error) {
+            console.log(error)
             userDeniedPermission()
             throw error
         }
