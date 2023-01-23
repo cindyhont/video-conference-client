@@ -6,7 +6,8 @@ let
     prevVideoSrc = '',
     // localVideoTrack:MediaStreamTrack,
     // localAudioTrack:MediaStreamTrack,
-    localStream:MediaStream,
+    localUserStream:MediaStream,
+    localDisplayStream:MediaStream,
     remoteStreams:{
         [clientID:string]:MediaStream
     } = {},
@@ -20,7 +21,7 @@ const
         prevVideoSrc = s
     },
     clearLocalStream = () => {
-        localStream.getTracks().forEach(t=>t.stop())
+        localUserStream.getTracks().forEach(t=>t.stop())
     },
     setRemoteStream = (clientID:string,track:MediaStreamTrack) => {
         if (clientID in remoteStreams) remoteStreams[clientID].addTrack(track)
@@ -43,69 +44,6 @@ const
         enterRoomContainer.classList.add('hidden')
         showMsgBox(permissionDenied)
     },
-    trackIsEnded = (t:MediaStreamTrack) => t.readyState === 'ended',
-    fetchVideo = (source:string) => new Promise<boolean>(async(resolve,reject)=>{
-
-        /*
-        if (source==='desktop-camera'){
-            navigator.mediaDevices.getUserMedia({video:true,audio:false})
-                .then(stream=>{
-                    localStream.getVideoTracks().forEach(t=>{
-                        t.stop()
-                        localStream.removeTrack(t)
-                    })
-                    localStream.addTrack(stream.getVideoTracks()[0])
-                    resolve(true)
-                })
-                .catch(error=>reject(error))
-        } else if (source==='front-camera'){
-            navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false})
-                .then(stream=>{
-                    localStream.getVideoTracks().forEach(t=>{
-                        t.stop()
-                        localStream.removeTrack(t)
-                    })
-                    localStream.addTrack(stream.getVideoTracks()[0])
-                    resolve(true)
-                })
-                .catch(error=>reject(error))
-        } else if (source==='rear-camera'){
-            navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})
-                .then(stream=>{
-                    localStream.getVideoTracks().forEach(t=>{
-                        t.stop()
-                        localStream.removeTrack(t)
-                    })
-                    localStream.addTrack(stream.getVideoTracks()[0])
-                    resolve(true)
-                })
-                .catch(error=>reject(error))
-        } else {
-            navigator.mediaDevices.getDisplayMedia({video:true,audio:false})
-                .then(stream=>{
-                    localStream.getVideoTracks().forEach(t=>{
-                        t.stop()
-                        localStream.removeTrack(t)
-                    })
-                    localStream.addTrack(stream.getVideoTracks()[0])
-                    resolve(true)
-                })
-                .catch(error=>reject(error))
-        }
-        */
-    }),
-    fetchAudio = () => new Promise<boolean>(async(resolve,reject)=>{
-        navigator.mediaDevices.getUserMedia({video:false,audio:true})
-            .then(stream=>{
-                localStream.getAudioTracks().forEach(t=>{
-                    t.stop()
-                    localStream.removeTrack(t)
-                })
-                localStream.addTrack(stream.getAudioTracks()[0])
-                resolve(true)
-            })
-            .catch(error=>reject(error))
-    }),
     requestLocalStream = async() => {
         if (!device.canProduce('video')) {
             console.log('cannot produce video')
@@ -114,7 +52,6 @@ const
         }
 
         const videoSrc = (document.querySelector('input[name="select-video-source"]:checked') as HTMLInputElement).value
-        // let tracks:MediaStreamTrack[]
 
         if (['desktop-camera','front-camera','rear-camera'].includes(videoSrc)){
             const constraint = {
@@ -124,16 +61,21 @@ const
                 ...(videoSrc==='rear-camera' && {video:{facingMode:'environment'}}),
             }
             try {
-                // let videoNotLive = true
-                // while (videoNotLive){
-                //     localStream = await navigator.mediaDevices.getUserMedia(constraint)
-                //     videoNotLive = localStream.getVideoTracks()[0].readyState === 'ended'
-                //     console.log(localStream.getVideoTracks())
-                // }
-                localStream = await navigator.mediaDevices.getUserMedia(constraint);
-                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localStream.getVideoTracks()[0]]);
+                localUserStream = await navigator.mediaDevices.getUserMedia(constraint);
+                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]);
                 showVideos()
             } catch (error) {
+                console.error(error)
+                throw error
+            }
+        } else {
+            try {
+                localDisplayStream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
+                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = localDisplayStream
+                showVideos()
+
+                localUserStream = await navigator.mediaDevices.getUserMedia({video:false,audio:true});
+            } catch (error){
                 console.error(error)
                 throw error
             }
@@ -171,7 +113,7 @@ export {
     isTouchableDevice,
     prevVideoSrc,
     setPrevVideoSrc,
-    localStream,
+    localUserStream,
     // localVideoTrack,
     // localAudioTrack,
     remoteStreams,
