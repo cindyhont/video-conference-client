@@ -1,11 +1,9 @@
-import { enterRoomContainer, permissionDenied, showMsgBox, showVideos, videoContainer } from "./ui"
+import { enterRoomContainer, permissionDenied, showMsgBox, videoContainer } from "./ui"
 import { device, producers } from "./_mediasoup"
 
 let 
     isTouchableDevice = window.matchMedia('(hover:none)').matches,
     prevVideoSrc = '',
-    // localVideoTrack:MediaStreamTrack,
-    // localAudioTrack:MediaStreamTrack,
     localUserStream:MediaStream,
     localDisplayStream:MediaStream,
     remoteStreams:{
@@ -22,6 +20,7 @@ const
     },
     clearLocalStream = () => {
         localUserStream.getTracks().forEach(t=>t.stop())
+        localDisplayStream?.getTracks().forEach(t=>t.stop())
     },
     setRemoteStream = (clientID:string,track:MediaStreamTrack) => {
         if (clientID in remoteStreams) remoteStreams[clientID].addTrack(track)
@@ -114,23 +113,6 @@ const
                 throw error
             }
         }
-
-
-
-        /*
-        try {
-            
-            localVideoTrack?.stop()
-            producers?.video?.pause()
-            localVideoTrack = await fetchVideo(source);
-            (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localVideoTrack])
-            producers?.video?.replaceTrack({track: localVideoTrack})
-            producers?.video?.resume()
-            
-        } catch (error) {
-            throw error
-        }
-        */
     }
 
 export {

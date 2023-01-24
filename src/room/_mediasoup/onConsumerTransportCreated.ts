@@ -3,7 +3,7 @@ import { device } from ".";
 import { IconnectConsumerTransport, Iconsume, Iresume, IwsEvent } from "../interfaces";
 import { setRemoteStream, setVideoElement, videoElements } from "../streams";
 import { updateVideoSize, videoContainer } from "../ui";
-import { clientID, websocket } from "../ws";
+import { websocket } from "../ws";
 import send from "../_ws/send";
 
 const 
@@ -90,7 +90,6 @@ const
                 }
 
                 const {type,payload} = JSON.parse(msg) as IwsEvent
-                // console.log(type)
                 switch (type){
                     case 'consumerConnected':
                         if (payload.transportID === transport.id) {
@@ -99,7 +98,6 @@ const
                         }
                         break
                     default: 
-                        // if (consumerNotConnected) errback(new Error('consumerNotConnected'))
                         break
                 }
             })

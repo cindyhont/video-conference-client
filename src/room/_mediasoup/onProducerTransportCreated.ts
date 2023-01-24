@@ -8,20 +8,6 @@ import send from "../_ws/send";
 import { fetchExistingProducerIDs } from "./fetchExistingProducerIDs";
 
 const 
-    getUserMedia = async () => {
-        if (!device.canProduce('video')) {
-            throw new Error('cannot produce video')
-        }
-
-        let stream:MediaStream
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({video:true,audio:true})
-        } catch (error) {
-            throw error
-        }
-
-        return stream
-    },
     onProducerTransportCreated = async (
         transportParams:{
             id: string;
@@ -57,11 +43,11 @@ const
                 const {type,payload} = JSON.parse(msg) as IwsEvent
                 if (!!payload && 'mediaKind' in payload && payload.mediaKind === mediaKind){
                     if (type==='producerConnected') {
-                        console.log(mediaKind,'producerConnected')
+                        // console.log(mediaKind,'producerConnected')
                         producerNotConnected = false
                         callback()
                     } else if (producerNotConnected) {
-                        console.log(mediaKind,'producerNotConnected')
+                        // console.log(mediaKind,'producerNotConnected')
                         errback(new Error('producerNotConnected'))
                     }
                 }
@@ -69,7 +55,7 @@ const
         })
 
         transport.on('produce', async ({ kind, rtpParameters }, callback, errback ) => {
-            console.log(mediaKind,'produce')
+            // console.log(mediaKind,'produce')
             const message:Iproduce = {
                 type:'produce',
                 payload:{
@@ -97,10 +83,10 @@ const
                         notProduced = false
                         /**** fetch other producers ****/
                         if (mediaKind==='video') fetchExistingProducerIDs()
-                        console.log(mediaKind,'produced')
+                        // console.log(mediaKind,'produced')
                         callback({id:payload.id})
                     } else if (notProduced) {
-                        console.log(mediaKind,'notProduced')
+                        // console.log(mediaKind,'notProduced')
                         errback(new Error('notProduced'))
                     }
                 }
@@ -110,25 +96,22 @@ const
         transport.on('connectionstatechange',state => {
             switch (state){
                 case 'connecting':
-                    console.log(mediaKind,'connecting')
+                    // console.log(mediaKind,'connecting')
                     break
                 case 'connected':
-                    console.log(mediaKind,'connected');
-                    (document.getElementById('localVideo') as HTMLVideoElement).srcObject = useUserMedia(videoSrc) ? new MediaStream([localUserStream.getVideoTracks()[0]]) : new MediaStream([localDisplayStream.getVideoTracks()[0]]); //localUserStream//new MediaStream([localVideoTrack])
+                    // console.log(mediaKind,'connected');
+                    (document.getElementById('localVideo') as HTMLVideoElement).srcObject = useUserMedia(videoSrc) ? new MediaStream([localUserStream.getVideoTracks()[0]]) : new MediaStream([localDisplayStream.getVideoTracks()[0]]);
                     showVideos()
                     break
                 case 'failed':
-                    console.log(mediaKind,'failed')
+                    // console.log(mediaKind,'failed')
                     transport.close()
                     break
             }
         })
 
-        
-
         try {
             const _producer = await transport.produce({track: mediaKind === 'video' ? useUserMedia(videoSrc) ? localUserStream.getVideoTracks()[0] : localDisplayStream.getVideoTracks()[0] : localUserStream.getAudioTracks()[0]})
-            // const _producer = await transport.produce({track: mediaKind === 'video' ? localUserStream.getVideoTracks()[0] : localUserStream.getAudioTracks()[0]})
             setProducer(_producer,mediaKind)
         } catch (error) {
             videoContainer.classList.add('hidden')
