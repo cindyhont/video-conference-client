@@ -8,6 +8,7 @@ import { serverHost, setServerHost } from './_ws/serverHost'
 import { onExistingProducerIDs } from './_mediasoup/onExistingProducerIDs'
 import { connectionErrorContainer, enterRoomContainer, roomNotExistContainer, showMsgBox, updateVideoSize } from './ui'
 import { setIsExistingRoom } from './_mediasoup'
+import { deleteVideoElement } from './streams'
 
 let 
     roomID:string,
@@ -45,7 +46,7 @@ const
                 onNewProducer(payload.producerID,payload.producerClientID,payload.kind);
                 break;
             case 'deleteClient':
-                document.getElementById(payload.clientID)?.remove()
+                deleteVideoElement(payload.clientID)
                 updateVideoSize()
                 break
             case 'consumerTransportCreated':

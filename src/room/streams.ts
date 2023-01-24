@@ -11,7 +11,8 @@ let
     } = {},
     videoElements:{
         [clientID:string]:HTMLVideoElement
-    } = {}
+    } = {},
+    videoIDs:string[] = []
 
 const 
     setPrevVideoSrc = (s:string) => {
@@ -26,17 +27,26 @@ const
         if (clientID in remoteStreams) remoteStreams[clientID].addTrack(track)
         else remoteStreams[clientID] = new MediaStream([track])
     },
-    deleteStream = (clientID:string) => {
-        if (clientID in remoteStreams) delete remoteStreams[clientID]
-    },
     setVideoElement = (elem:HTMLVideoElement,clientID:string) => {
+        if (!videoIDs.includes(clientID)) videoIDs.push(clientID)
         remoteStreams[clientID] = new MediaStream()
         elem.srcObject = remoteStreams[clientID]
         videoElements[clientID] = elem
     },
     deleteVideoElement = (clientID:string) => {
+        // delete video ID from array
+        if (videoIDs.includes(clientID)) videoIDs = videoIDs.filter(e=>e!==clientID)
+
+        // remove video element
+        document.getElementById(clientID)?.remove()
         videoElements[clientID]?.remove()
         delete videoElements[clientID]
+
+        // delete stream
+        if (clientID in remoteStreams) {
+            remoteStreams[clientID].getTracks().forEach(t=>{ t.stop() })
+            delete remoteStreams[clientID]
+        }
     },
     userDeniedPermission = () => {
         videoContainer.classList.add('hidden')
@@ -127,9 +137,9 @@ export {
     videoElements,
     clearLocalStream,
     setRemoteStream,
-    deleteStream,
     setVideoElement,
     deleteVideoElement,
+    videoIDs,
     requestLocalStream,
     changeVideoSource,
 }

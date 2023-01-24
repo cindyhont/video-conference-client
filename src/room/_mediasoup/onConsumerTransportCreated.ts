@@ -30,6 +30,7 @@ const
             const videoElem = document.createElement('video')
             videoElem.autoplay = true
             videoElem.controls = true
+            videoElem.playsInline = true
             videoElem.id = producerClientID
             setVideoElement(videoElem,producerClientID)
         }

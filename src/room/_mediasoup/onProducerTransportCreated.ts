@@ -1,8 +1,8 @@
 import { DtlsParameters, IceCandidate, IceParameters, MediaKind } from "mediasoup-client/lib/types";
 import { device, setProducer, setProducerTransport } from "."
 import { IconnectProducerTransport, Iproduce, IwsEvent } from "../interfaces";
-import { getVideoSrc, localDisplayStream, localUserStream, useUserMedia } from "../streams";
-import { permissionDenied, showMsgBox, showVideos, videoContainer } from "../ui";
+import { getVideoSrc, localDisplayStream, localUserStream, setVideoElement, useUserMedia, videoElements } from "../streams";
+import { permissionDenied, showMsgBox, showVideos, updateVideoSize, videoContainer } from "../ui";
 import { clientID, websocket } from "../ws";
 import send from "../_ws/send";
 import { fetchExistingProducerIDs } from "./fetchExistingProducerIDs";
@@ -20,6 +20,15 @@ const
         const transport = device.createSendTransport(transportParams)
         const videoSrc = getVideoSrc()
         setProducerTransport(transport,mediaKind)
+
+        if (!('localVideo' in videoElements)) {
+            const videoElem = document.createElement('video')
+            videoElem.autoplay = true
+            videoElem.controls = true
+            videoElem.playsInline = true
+            videoElem.id = 'localVideo'
+            setVideoElement(videoElem,'localVideo')
+        }
 
         transport.on('connect',async ({dtlsParameters},callback,errback)=>{
             const message:IconnectProducerTransport = {
@@ -100,8 +109,12 @@ const
                     break
                 case 'connected':
                     // console.log(mediaKind,'connected');
-                    (document.getElementById('localVideo') as HTMLVideoElement).srcObject = useUserMedia(videoSrc) ? new MediaStream([localUserStream.getVideoTracks()[0]]) : new MediaStream([localDisplayStream.getVideoTracks()[0]]);
-                    showVideos()
+                    if (mediaKind==='video'){
+                        videoElements.localVideo.srcObject = useUserMedia(videoSrc) ? new MediaStream([localUserStream.getVideoTracks()[0]]) : new MediaStream([localDisplayStream.getVideoTracks()[0]]);
+                        videoContainer.appendChild(videoElements.localVideo)
+                        showVideos()
+                        updateVideoSize()
+                    }
                     break
                 case 'failed':
                     // console.log(mediaKind,'failed')
