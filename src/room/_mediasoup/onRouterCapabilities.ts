@@ -22,7 +22,18 @@ const onRouterCapabilities = async (routerRtpCapabilities:RtpCapabilities) => {
         return
     }
 
-    await device.load({ routerRtpCapabilities })
+    try {
+        await device.load({ routerRtpCapabilities })
+    } catch (error) {
+        showMsgBox(browserNotSupportMsg)
+        const message:IdeleteClient = {
+            type:'deleteClient',
+            payload:{clientID}
+        }
+        send(message,websocket)
+        return
+    }
+
     if (!isExistingRoom) {
         try {
             await requestLocalStream()
@@ -32,10 +43,7 @@ const onRouterCapabilities = async (routerRtpCapabilities:RtpCapabilities) => {
         }
         createProducerTransport('video')
         createProducerTransport('audio')
-    }
-
-    // can start room
-    if (isExistingRoom && enterRoomContainer.classList.contains('hidden')) showMsgBox(enterRoomContainer)
+    } else if (enterRoomContainer.classList.contains('hidden')) showMsgBox(enterRoomContainer)
 }
 
 export { onRouterCapabilities }
