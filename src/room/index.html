@@ -64,12 +64,6 @@
                                 <p class="my-auto mr-2">Rear Camera</p>
                             </label>
                         </div>
-                        <div class="text-left m-1 touchable-video-source">
-                            <input hidden class="peer" type="radio" name="select-video-source" id="camera-display" value="camera-display" />
-                            <label class="duration-200 rounded-md hover:bg-white/10 peer-checked:bg-cyan-400 [@media(hover:hover)]:peer-checked:hover:bg-cyan-300 flex cursor-pointer before:inline-block before:px-2 before:pt-2 before:content-[url('./icons/camera-display.svg')]" for="camera-display">
-                                <p class="my-auto mr-2">Screen</p>
-                            </label>
-                        </div>
                     </form>
                     <button id="enter-room-btn" class="bg-cyan-400 mt-2 p-2 rounded-md transition duration-300 hover:bg-cyan-300">Enter</button>
                 </div>
@@ -97,7 +91,6 @@
                     <img src="../icons/desktop-display.svg" class="select-video-source-svg hidden desktop-display" />
                     <img src="../icons/front-camera.svg" class="select-video-source-svg hidden front-camera" />
                     <img src="../icons/rear-camera.svg" class="select-video-source-svg hidden rear-camera" />
-                    <img src="../icons/camera-display.svg" class="select-video-source-svg hidden camera-display" />
                 </label>
                 <div id="video-source-menu" class="-translate-x-full duration-500 [@media(hover:hover)]:hover:translate-x-0 [@media(hover:hover)]:peer-hover:translate-x-0">
                     <label class="before:inline-block before:px-2 before:pt-2 desktop-video-source bg-cyan-400 flex cursor-pointer before:content-[url('./icons/desktop-camera.svg')]" for="desktop-camera">
@@ -112,11 +105,9 @@
                     <label class="before:inline-block before:px-2 before:pt-2 touchable-video-source bg-cyan-400 flex cursor-pointer before:content-[url('./icons/rear-camera.svg')]" for="rear-camera">
                         <p class="my-auto mr-2">Rear Camera</p>
                     </label>
-                    <label class="before:inline-block before:px-2 before:pt-2 touchable-video-source bg-cyan-400 flex cursor-pointer before:content-[url('./icons/camera-display.svg')]" for="camera-display">
-                        <p class="my-auto mr-2">Screen</p>
-                    </label>
                 </div>
             </div>
+            <video id="localVideo" autoplay controls playsinline></video>
         </div>
     </body>
 </html>

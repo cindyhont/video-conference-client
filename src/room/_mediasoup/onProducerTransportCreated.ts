@@ -17,18 +17,12 @@ const
         },
         mediaKind:MediaKind,
     ) => {
-        const transport = device.createSendTransport(transportParams)
-        const videoSrc = getVideoSrc()
+        const 
+            transport = device.createSendTransport(transportParams),
+            videoSrc = getVideoSrc(),
+            videoElem = document.getElementById('localVideo') as HTMLVideoElement
+            
         setProducerTransport(transport,mediaKind)
-
-        if (!('localVideo' in videoElements)) {
-            const videoElem = document.createElement('video')
-            videoElem.autoplay = true
-            videoElem.controls = true
-            videoElem.playsInline = true
-            videoElem.id = 'localVideo'
-            setVideoElement(videoElem,'localVideo')
-        }
 
         transport.on('connect',async ({dtlsParameters},callback,errback)=>{
             const message:IconnectProducerTransport = {
@@ -110,8 +104,7 @@ const
                 case 'connected':
                     // console.log(mediaKind,'connected');
                     if (mediaKind==='video'){
-                        videoElements.localVideo.srcObject = useUserMedia(videoSrc) ? new MediaStream([localUserStream.getVideoTracks()[0]]) : new MediaStream([localDisplayStream.getVideoTracks()[0]]);
-                        videoContainer.appendChild(videoElements.localVideo)
+                        videoElem.srcObject = useUserMedia(videoSrc) ? new MediaStream([localUserStream.getVideoTracks()[0]]) : new MediaStream([localDisplayStream.getVideoTracks()[0]]);
                         showVideos()
                         updateVideoSize()
                     }

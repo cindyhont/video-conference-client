@@ -129,8 +129,13 @@ const
             (document.getElementById(prevVideoSrc) as HTMLInputElement).disabled = true;
         }
     },
-    videoSourceInputOnClick = () => {
+    videoSourceInputOnClick = (e:Event) => {
         if (videoSourceIconCheckbox.checked) videoSourceIconCheckbox.click()
+
+        const source = (e.target as HTMLInputElement).value
+
+        if (!producers?.video || producers.video.closed) return
+        if (source===prevVideoSrc && source==='desktop-display') changeVideoSource(source)
     }
 
 if ('visualViewport' in window){

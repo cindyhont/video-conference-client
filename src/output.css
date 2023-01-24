@@ -898,11 +898,6 @@ video {
   content: var(--tw-content);
 }
 
-.before\:content-\[url\(\'\.\/icons\/camera-display\.svg\'\)\]::before {
-  --tw-content: url('./icons/camera-display.svg');
-  content: var(--tw-content);
-}
-
 .hover\:bg-white\/40:hover {
   background-color: rgb(255 255 255 / 0.4);
 }
