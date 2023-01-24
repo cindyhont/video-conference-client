@@ -100,7 +100,8 @@ const
                     stream = await navigator.mediaDevices.getUserMedia(constraint);
                 producers?.video?.replaceTrack({track: stream.getVideoTracks()[0]})
                 producers?.video?.resume()
-                localUserStream.addTrack(stream.getVideoTracks()[0])
+                localUserStream.addTrack(stream.getVideoTracks()[0]);
+                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([stream.getVideoTracks()[0]])
             } catch (error) {
                 throw error
             }
@@ -109,7 +110,8 @@ const
                 const stream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
                 producers?.video?.replaceTrack({track: stream.getVideoTracks()[0]})
                 producers?.video?.resume()
-                localDisplayStream.addTrack(stream.getVideoTracks()[0])
+                localDisplayStream.addTrack(stream.getVideoTracks()[0]);
+                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([stream.getVideoTracks()[0]])
             } catch (error) {
                 throw error
             }
