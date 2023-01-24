@@ -35,9 +35,7 @@ const
                 enterRoomContainer.classList.add('hidden')
                 showMsgBox(connectionErrorContainer)
             }
-        }
-        // start room
-        if (!!serverHost) {
+        } else {
             if (isExistingRoom) {
                 try {
                     await requestLocalStream()
