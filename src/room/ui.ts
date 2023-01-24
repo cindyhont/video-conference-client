@@ -29,9 +29,13 @@ const
             const isLandscape = window.matchMedia('(orientation: landscape)').matches
             videoContainer.style.setProperty('--video-w',isLandscape ? '50%' : '100%')
             videoContainer.style.setProperty('--video-h',isLandscape ? '100%' : '50%')
+        } else {
+            let sqrt = 2
+            while (videoCount > sqrt * sqrt){
+                sqrt++
+            }
+            setVideoSize(100 / sqrt)
         }
-        else if (videoCount<5) setVideoSize(50)
-        else setVideoSize(100/3)
     },
     showVideos = () => {
         spinner.classList.add('hidden')
