@@ -82,7 +82,7 @@ const
             t.stop()
             localUserStream.removeTrack(t)
         })
-        localDisplayStream.getVideoTracks().forEach(t=>{
+        localDisplayStream?.getVideoTracks().forEach(t=>{
             t.stop()
             localDisplayStream.removeTrack(t)
         })
@@ -92,7 +92,6 @@ const
             try {
                 const 
                     constraint = {
-                        // audio:true,
                         ...(source==='desktop-camera' && {video:true}),
                         ...(source==='front-camera' && {video:{facingMode:'user'}}),
                         ...(source==='rear-camera' && {video:{facingMode:'environment'}}),
@@ -107,11 +106,10 @@ const
             }
         } else {
             try {
-                const stream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
-                producers?.video?.replaceTrack({track: stream.getVideoTracks()[0]})
-                producers?.video?.resume()
-                localDisplayStream.addTrack(stream.getVideoTracks()[0]);
-                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([stream.getVideoTracks()[0]])
+                localDisplayStream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
+                producers?.video?.replaceTrack({track: localDisplayStream.getVideoTracks()[0]});
+                producers?.video?.resume();
+                (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localDisplayStream.getVideoTracks()[0]])
             } catch (error) {
                 throw error
             }
