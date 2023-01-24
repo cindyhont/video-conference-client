@@ -84,7 +84,7 @@ const
         })
         localDisplayStream.getVideoTracks().forEach(t=>{
             t.stop()
-            localUserStream.removeTrack(t)
+            localDisplayStream.removeTrack(t)
         })
 
         producers?.video?.pause()
