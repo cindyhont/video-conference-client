@@ -53,9 +53,7 @@ const
             throw new Error('cannot produce video')
         }
 
-        
         const videoSrc = getVideoSrc()
-
         if (useUserMedia(videoSrc)){
             const constraint = {
                 audio:true,
@@ -64,13 +62,7 @@ const
                 ...(videoSrc==='rear-camera' && {video:{facingMode:'environment'}}),
             }
             try {
-                // let videoNotLive = true
-                // while (videoNotLive){
-                    localUserStream = await navigator.mediaDevices.getUserMedia(constraint);
-                //     videoNotLive = localUserStream.getVideoTracks()[0].readyState === 'ended';
-                // }
-                // (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]);
-                // showVideos()
+                localUserStream = await navigator.mediaDevices.getUserMedia(constraint);
             } catch (error) {
                 console.error(error)
                 throw error
@@ -78,49 +70,67 @@ const
         } else {
             try {
                 localUserStream = await navigator.mediaDevices.getUserMedia({video:false,audio:true});
-
-                // let videoNotLive = true
-                // while (videoNotLive){
-                    localDisplayStream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
-                //     videoNotLive = localDisplayStream.getVideoTracks()[0].readyState === 'ended';
-                // }
-                // (document.getElementById('localVideo') as HTMLVideoElement).srcObject = localDisplayStream
-                // showVideos()
+                localDisplayStream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
             } catch (error){
                 console.error(error)
                 throw error
             }
         }
-        
-        /*
-        try {
-            // let videoNotLive = true
-            // while (videoNotLive){
-                localUserStream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
-            //     videoNotLive = localUserStream.getVideoTracks()[0].readyState === 'ended';
-            //     console.log(localUserStream.getVideoTracks()[0].readyState)
-            // }
-            // (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localUserStream.getVideoTracks()[0]]);
-            // showVideos()
-        } catch (error) {
-            console.error(error)
-            throw error
-        }
-        */
     },
     changeVideoSource = async(source:string) => {
+        localUserStream.getVideoTracks().forEach(t=>{
+            t.stop()
+            localUserStream.removeTrack(t)
+        })
+        localDisplayStream.getVideoTracks().forEach(t=>{
+            t.stop()
+            localUserStream.removeTrack(t)
+        })
+
+        producers?.video?.pause()
+        if (useUserMedia(source)){
+            try {
+                const 
+                    constraint = {
+                        // audio:true,
+                        ...(source==='desktop-camera' && {video:true}),
+                        ...(source==='front-camera' && {video:{facingMode:'user'}}),
+                        ...(source==='rear-camera' && {video:{facingMode:'environment'}}),
+                    },
+                    stream = await navigator.mediaDevices.getUserMedia(constraint);
+                producers?.video?.replaceTrack({track: stream.getVideoTracks()[0]})
+                producers?.video?.resume()
+                localUserStream.addTrack(stream.getVideoTracks()[0])
+            } catch (error) {
+                throw error
+            }
+        } else {
+            try {
+                const stream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
+                producers?.video?.replaceTrack({track: stream.getVideoTracks()[0]})
+                producers?.video?.resume()
+                localDisplayStream.addTrack(stream.getVideoTracks()[0])
+            } catch (error) {
+                throw error
+            }
+        }
+
+
+
+        /*
         try {
-            /*
+            
             localVideoTrack?.stop()
             producers?.video?.pause()
             localVideoTrack = await fetchVideo(source);
             (document.getElementById('localVideo') as HTMLVideoElement).srcObject = new MediaStream([localVideoTrack])
             producers?.video?.replaceTrack({track: localVideoTrack})
             producers?.video?.resume()
-            */
+            
         } catch (error) {
             throw error
         }
+        */
     }
 
 export {
